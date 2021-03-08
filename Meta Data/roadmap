@@ -9,9 +9,16 @@ git clone https://github.com/ubdussamad/jnu.git
 
 
 * copy my local var/www/htdocs to 
+
 * make arrangements for enabling exec php call
+
 * write a job scheduler python or bash script
+
 * install apache GUI
+https://hostadvice.com/how-to/how-to-install-and-configure-apache-web-gui-on-ubuntu-18-04-vps-or-dedicated-server/
+
 * Create a ht docs file to control which files are acessible from beb
+
 * install sqlite3 in python
+
 * create a db file with schema as present in the sched folder  

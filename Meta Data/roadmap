@@ -1,0 +1,17 @@
+* install apache 2
+
+* install install php7 bindings for apache 2
+sudo apt-get install php libapache2-mod-php php-mcrypt php-mysql
+sudo apt-get install python3-pip, sqlite3
+pip3 install db-sqlite3
+sudp apt-get install git
+git clone https://github.com/ubdussamad/jnu.git
+
+
+* copy my local var/www/htdocs to 
+* make arrangements for enabling exec php call
+* write a job scheduler python or bash script
+* install apache GUI
+* Create a ht docs file to control which files are acessible from beb
+* install sqlite3 in python
+* create a db file with schema as present in the sched folder  

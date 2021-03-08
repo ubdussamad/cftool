@@ -12,7 +12,7 @@ def script_directory(f):
 
 
 JOB_TRACKER_FILE = "jobs.db"
-SCH_DEBUG = 1
+SCH_DEBUG = 0
 
 MAX_RUNNING_JOBS_AT_ONCE = 4
 MAX_HISTORY_RETENTION_LIMIT_HOURS = 24
@@ -132,7 +132,11 @@ def main (args):
             if r == []:
                 print("No Jobs for given Credentials")
                 return
-            print(r)
+            # r = str(r)[1:-1]
+            # print( "|".join( r.split("),")).strip('(') )
+            for i in r:
+                for j in i:
+                    print (j,end=",")
 
     # Append a new job
     elif cmd == 'a': # {$FILENAME (0), $CMD (1), $USR_NAME (2), $JOB_ID (3) }

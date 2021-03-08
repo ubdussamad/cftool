@@ -204,7 +204,10 @@
         chdir("scheduler");
         $cmd = "python3 scheduler.py l " . $usr_name;
         exec( $cmd, $output);
-        print_r($output);
+        $job_list = explode("),", trim (substr($output[0],1,-1),'(') );
+
+        echo $job_list[0] . "<br/>";
+        echo $job_list[1] . "<br/>";
         chdir("../");
         echo "<br/>";
       // }

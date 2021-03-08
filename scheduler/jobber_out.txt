@@ -1,0 +1,7 @@
+job@1 is Done
+('Refreshing.....',)
+('Currently running Jobs are: 1',)
+('Open Slots are: 3',)
+('Pending jobs are: ',)
+([],)
+('Updating ... \n ./scheduler.py, u, user@69, job@1, 4',)

@@ -12,7 +12,7 @@ def script_directory(f):
 
 
 JOB_TRACKER_FILE = "jobs.db"
-SCH_DEBUG = 0
+SCH_DEBUG = 1
 
 MAX_RUNNING_JOBS_AT_ONCE = 4
 MAX_HISTORY_RETENTION_LIMIT_HOURS = 24
@@ -73,11 +73,11 @@ def refresh():
             u_id = i[1]
             if open_slots:
                 status = 1
-                try:
-                    subprocess.(['bash', 'jobber.sh',str(u_id),str(j_id)])
-                except Exception as e:
-                    sch_log("Exception happened while running Job_id: %s , %s"%(j_id,e))
-                    status = 2
+                # try:
+                subprocess.Popen(['bash', 'jobber.sh',str(u_id),str(j_id)] , stdout=open("jobber_out.txt" , 'w'))
+                # except Exception as e:
+                #     sch_log("Exception happened while running Job_id: %s , %s"%(j_id,e))
+                #     status = 2
                 sch_log("Running Job_ID: %s"%(j_id))
                 q = "UPDATE jobs SET job_status = %s WHERE job_id = '%s' and usr_name='%s'"%(str(status),j_id,u_id)
                 cursor.execute(q)
@@ -172,7 +172,7 @@ def main (args):
                 # This will naturally increase the running count.
                 status = 1 #running.
                 try:
-                    subprocess.Popen(['bash', 'jobber.sh',args[2],args[3]])
+                    subprocess.Popen(['bash', 'jobber.sh',args[2],args[3]] , stdout="/dev/null" )
                 except:
                     status = 2
                 

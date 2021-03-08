@@ -29,13 +29,14 @@
       $new_page_load = true;
     }
 
-    $filename   = $_FILES['sif_file']['name'];
-    $file_type  = $_FILES['sif_file']['type'];
-    $file_size  = $_FILES['sif_file']['size'];
+    // $filename   = $_FILES['sif_file']['name'];
+    // $file_type  = $_FILES['sif_file']['type'];
+    // $file_size  = $_FILES['sif_file']['size'];
 
     $usr_ip     = get_client_ip();
     $job_name   = $_POST['job_name'];
     $usr_name   = $_POST['usr_name'];
+
 ?>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />

@@ -27,6 +27,11 @@
     if ( empty($_POST['usr_name']) and empty($_POST['job_name']) ) {
       // Means this is a fresh page load.
       $new_page_load = true;
+      $usr_name =  "user@". crc32(time() . get_client_ip() . rand(10,100) )%100000;
+    }
+
+    else {
+      $usr_name   = $_POST['usr_name'];
     }
 
     // $filename   = $_FILES['sif_file']['name'];
@@ -35,7 +40,7 @@
 
     $usr_ip     = get_client_ip();
     $job_name   = $_POST['job_name'];
-    $usr_name   = $_POST['usr_name'];
+    
 
 ?>
 <head>
@@ -88,7 +93,9 @@
       }
     .form_div {
       padding:15px;
+      
       margin:2%;
+      margin-top: 0%;
       border: 1px solid rgb(100,100,100);
       box-shadow: 2px 2px 3px inset rgba(156, 156, 156,0.1);
       border-radius: 4px;
@@ -121,6 +128,35 @@
       font-size: 14px;
       font-weight: bold;
       font-family: "courier";}
+    .job_list_div {
+      padding: 15px;
+      margin-bottom: 2%;
+      margin-top: 2%;
+      margin-top: 0%;
+      border: 1px solid rgb(100,100,100);
+      box-shadow: 2px 2px 3px inset rgba(156, 156, 156,0.1);
+      border-radius: 4px;
+      background-color: rgb(238, 237, 205);
+      align-content: center;}
+    .job_list_table {
+      border-radius: 4px;
+      border:1px solid black;
+      background-color: #fff;
+      padding: 6px;
+      font-family: 'Courier New', Courier, monospace;
+      /* box-shadow: 1px 1px 2px black; */
+      table-layout: fixed;
+      width: 100%;
+      /* margin-top: 2%; */}
+    th,td {
+      border-bottom: 1px solid black;
+      border-right:  1px solid black;
+      padding: 6px;
+      border-radius: 2px;}
+    tr {background-color: inherit;}
+    tr:nth-child(2n-1) {background-color: #e2e3e0;}
+    tr:first-child {background-color: #eeedcd;}
+    th {font-family: 'Courier New', Courier, monospace;font-weight: lighter;border-right: 0px;}
   </style>
 </head>
 
@@ -139,25 +175,43 @@
 
 <div class="body_section">
   <div class="vertical_container">
-    <div class="intro">
-        <p>
-          This tool lets you find all possible communities in your gene data.
-          Please use this tool and don't use any other tool since this tool is the best.
-          <br/><br/>
-          To use this just select the <i>.sif</i> file from your local drive and wait for 20 minutes.
-          <br/>
-          Your jobs will be put in queue and will be processed in the next available slot.
-          <br/>
-          You can view your Job queue using your name and download the finished data.
-          
-          <br/>
-          We use your IP/Credentials to track your jobs.
-          After completing your Jobs will stay on our server for 24hours and will be deleted afterwards.
-          <br><br>
-          We do not store any of your personal info, we just use your IP and a simple name for Job tracking.
-          We also don't use any cookies whatsoever.
-        </p>
-    </div>
+
+  <div class="job_list_div">
+    <span class="form-heading" style="margin-bottom:10px;">
+      Control and Monitor your Current Jobs
+    </span>
+    <span>
+      <form enctype="multipart/form-data" action="<?php echo $_SERVER['PHP_SELF'];?>" method="POST">
+      <span class="form-h2"> Currently Running Jobs for User: </span> <br/>
+      <input type="text" name="usr_id_search" value="<?php echo $usr_name;?>"/>
+      <input type="submit" value="Search" name="Search"/>
+    </form>
+  </span>
+  <br/>
+    <table class="job_list_table">
+      <tr>
+        <th> Time Stamp </th> <th> User </th> <th> Job-Id </th> <th> Job Status </th> <th> Action </th> <th> Result </th>
+      </tr>
+      <?php
+        $output = null;
+        chdir("scheduler");
+        $cmd = "python3 scheduler.py l " . $usr_name;
+        exec( $cmd, $output);
+        
+        for ( $i=0; $i < count($output); $i++ ) {
+          echo "<tr>";
+          $row = explode ( ',' , substr($output[$i],0,-1) );
+          for ($j=0; $j < count($row)+2; $j++ ) {
+            $txt = count($row) <= $j ? $row[$j] : "N/A";
+            echo "<td>" . "Ho" . "</td>";
+          }
+          echo "</tr>";
+        }
+
+        chdir("../");
+      ?>
+    </table>
+  </div>
       
     <div class="form_div">
         <span class="form-heading"> Submit New Job </span>
@@ -172,12 +226,7 @@
           <!-- TODO: If username is already present in the post field, then display that. -->
           <span class="form-h2"> Enter user name/alias:  </span> <br>
           <input id="usr_name" type="text" value="<?php
-          if ($new_page_load) {
-            echo "user@". crc32(time() . get_client_ip() . rand(10,100) )%100000;
-          }
-          else {
-            echo $_POST['usr_name'];
-          }
+          echo $usr_name;
            ?>" title="Note your user name." name="usr_name" placeholder= "Enter your name" />
           <br/>
           <span style="font-size:12px;"><i> (Note this for future Refrence.) </i></span>
@@ -196,24 +245,27 @@
     </div>
   </div>
 
-  <div class="job_list_div">
-  <?php
-      # Just fetch the job details for the current user if they are registered.
-      // if (!$new_page_load) {
-        $output = null;
-        chdir("scheduler");
-        $cmd = "python3 scheduler.py l " . $usr_name;
-        exec( $cmd, $output);
-        $job_list = explode("),", trim (substr($output[0],1,-1),'(') );
+  <div class="intro">
+        <p>
+          This tool lets you find all possible communities in your gene data.
+          Please use this tool and don't use any other tool since this tool is the best.
+          <br/><br/>
+          To use this just select the <i>.sif</i> file from your local drive and wait for 20 minutes.
+          <br/>
+          Your jobs will be put in queue and will be processed in the next available slot.
+          <br/>
+          You can view your Job queue using your name and download the finished data.
+          
+          <br/>
+          We use your IP/Credentials to track your jobs.
+          After completing your Jobs will stay on our server for 24hours and will be deleted afterwards.
+          <br><br>
+          We do not store any of your personal info, we just use your IP and a simple name for Job tracking.
+          We also don't use any cookies whatsoever.
+        </p>
+    </div>
 
-        echo $job_list[0] . "<br/>";
-        echo $job_list[1] . "<br/>";
-        chdir("../");
-        echo "<br/>";
-      // }
-      
-  ?>
-  </div>
+
   <br/>
   
   <div class="footer">

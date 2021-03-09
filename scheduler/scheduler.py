@@ -73,11 +73,15 @@ def refresh():
             u_id = i[1]
             if open_slots:
                 status = 1
-                # try:
-                subprocess.Popen(['bash', 'jobber.sh',str(u_id),str(j_id)] , stdout=open("jobber_out.txt" , 'w'))
-                # except Exception as e:
-                #     sch_log("Exception happened while running Job_id: %s , %s"%(j_id,e))
-                #     status = 2
+                try:
+                    # Giving the subprocess call a diffrent stdout files
+                    # eliminates the issue of php waiting for the call to finish before loadibng the whole page.
+                    # There could be an issue when mutiple jobs might use the same stdout file for printing output
+                    # This could be eliminated by creating a specific file for each job_id.
+                    subprocess.Popen(['bash', 'jobber.sh',str(u_id),str(j_id)] , stdout=open("jobber_out.txt" , 'w'))
+                except Exception as e:
+                    sch_log("Exception happened while running Job_id: %s , %s"%(j_id,e))
+                    status = 2
                 sch_log("Running Job_ID: %s"%(j_id))
                 q = "UPDATE jobs SET job_status = %s WHERE job_id = '%s' and usr_name='%s'"%(str(status),j_id,u_id)
                 cursor.execute(q)
@@ -124,7 +128,7 @@ def main (args):
         if len(args) == 3:
             # Search for name & IP addr , if exists then find running jobs.
             # Ensure safety by parsing the args using regex to check for injection.
-            q = "SELECT * from jobs"#WHERE usr_name='%s' "%(args[2])
+            q = "SELECT * from jobs WHERE usr_name='%s' "%(args[2])
             sch_log(q)
             cursor.execute(q)
             r = cursor.fetchall()
@@ -137,6 +141,8 @@ def main (args):
             for i in r:
                 for j in i:
                     print (j,end=",")
+                print('',end='\n')
+            # print("",end='\n')
 
     # Append a new job
     elif cmd == 'a': # {$FILENAME (0), $CMD (1), $USR_NAME (2), $JOB_ID (3) }
@@ -176,7 +182,7 @@ def main (args):
                 # This will naturally increase the running count.
                 status = 1 #running.
                 try:
-                    subprocess.Popen(['bash', 'jobber.sh',args[2],args[3]] , stdout="/dev/null" )
+                    subprocess.Popen(['bash', 'jobber.sh',args[2],args[3]] , stdout=open("jobber_out.txt" , 'w') )
                 except:
                     status = 2
                 

@@ -1,6 +1,11 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 
+<!-- 
+BUGS: TODO:
+* Copying value adds new jobs to the list in chrome. -->
+
+
 <?php
     function get_client_ip() {
       $ipaddress = '';
@@ -81,9 +86,32 @@
   <script type="text/javascript">
     function copy_to_clipboard() {
       var copyText = document.getElementById("usr_name");
-      copyText.select();
-      copyText.setSelectionRange(0, 99999); /* For mobile devices */
-      document.execCommand("copy");
+      // copyText.select();
+      // copyText.setSelectionRange(0, 99999); /* For mobile devices */
+      // document.execCommand("copy");
+      navigator.clipboard.writeText(copyText);
+    }
+    // Min file size and max file size validation is done here
+    // Also, file type check could be done here.
+    // Dont abuse this, the server itself wont accept a larger or smaller file size anyways.
+    function validate_job_submittion() {
+      var a = document.getElementById('job_name');
+      var b = document.getElementById('usr_name');
+      var file = document.getElementById('file_name').files[0];
+
+      if(file) {// perform the size check only if a file is present.
+        if(file.size > 597152 && file.size < 50097152) { // 50 MB (this size is in bytes)
+            return true;       
+        }
+        else {
+          alert("File is  over 50Mb in size!");
+          return false;
+        }
+      }
+      else {
+        alert("Please select a file first!");
+        return false;
+      }
     }
   </script>
 
@@ -159,12 +187,12 @@
         <span class="form-heading"> Submit New Job </span>
         <hr />
         <!-- TODO: Do not let user submit form without valid form data. -->
-        <form enctype="multipart/form-data" style="padding-top:10px;" title="Submit New Job"
+        <form onsubmit="return validate_job_submittion()" enctype="multipart/form-data" style="padding-top:10px;" title="Submit New Job"
           action="<?php echo $_SERVER['PHP_SELF'];?>" method="POST">
           <input type="hidden" name="search_only" value="0" />
           <span class="form-h2"> Enter Job name or leave it default: </span> <br>
           
-          <input id="Name" type="text" name="job_name"
+          <input id="job_name" type="text" name="job_name"
             value="<?php $job_id = 'Job@' . date('d-m-yh:i:s');echo $job_id;?>" />
 
           <br /><br />
@@ -177,7 +205,7 @@
           echo $usr_name;
            ?>" title="Note your user name." name="usr_name" placeholder="Enter your name" />
 
-          <button title="Copy User Name to Clipboard." class="cpy-btn" onclick="copy_to_clipboard()">📄</button>
+          <!-- <button title="Copy User Name to Clipboard." class="cpy-btn" onclick="copy_to_clipboard()">📄</button> -->
           </span>
 
           <span style="font-size:12px;"><i> (Note this for future Refrence.) </i></span>
@@ -185,7 +213,7 @@
 
           <!-- <input type="hidden" name="MAX_FILE_SIZE" value="30000" /> -->
           <span class="form-h2"> Select File: <i> (.sif) </i> </span> <br />
-          <input id="file" type="file" name="sif_file" placeholder="<?php $date = date('d-m-y h:i:s');echo $date; ?>" />
+          <input id="file_name" type="file" name="sif_file" placeholder="<?php $date = date('d-m-y h:i:s');echo $date; ?>" />
 
           <br />
           <br />

@@ -24,7 +24,7 @@
     # TODO: Maybe even verify file data too.
     # Impliment refreshing mechnish ofr the list.
     # Impliment Job Submittion here only.
-    if ( empty($_POST['usr_name']) and empty($_POST['job_name']) ) {
+    if ( (empty($_POST['usr_name']) and empty($_POST['usr_name']))  ) {
       // Means this is a fresh page load.
       $new_page_load = true;
       $usr_name =  "user@". crc32(time() . get_client_ip() . rand(10,100) )%100000;
@@ -46,6 +46,14 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <title> Community Finding Tool - SCIS, JNU </title>
+  <script type="text/javascript">
+  function copy_to_clipboard() {
+  var copyText = document.getElementById("usr_name");
+  copyText.select();
+  copyText.setSelectionRange(0, 99999); /* For mobile devices */
+  document.execCommand("copy");
+} 
+  </script>
   <style type="text/css" media="screen">
     body {
       display: flex;
@@ -108,11 +116,12 @@
       font-weight: 900;
       font-family:'Courier';}
     .submit_button {
-      color: black;
+      color: white;
       width: 50%;
-      border:1px solid #8a8aca;
-      padding: 3px;
-      border-radius: 5px;}
+      border: 1px solid #848484;
+      padding: 6px;
+      border-radius: 7px;
+      background: #567880;}
     .form-heading {
       color: #213d73;
       padding-bottom: 0;
@@ -137,26 +146,30 @@
       box-shadow: 2px 2px 3px inset rgba(156, 156, 156,0.1);
       border-radius: 4px;
       background-color: rgb(238, 237, 205);
+
       align-content: center;}
     .job_list_table {
       border-radius: 4px;
       border:1px solid black;
       background-color: #fff;
       padding: 6px;
+      border-collapse: collapse;
       font-family: 'Courier New', Courier, monospace;
-      /* box-shadow: 1px 1px 2px black; */
       table-layout: fixed;
-      width: 100%;
-      /* margin-top: 2%; */}
+      width: 100%;}
     th,td {
       border-bottom: 1px solid black;
       border-right:  1px solid black;
       padding: 6px;
+      word-wrap: break-word;
+      /* word-break: break-all; */
       border-radius: 2px;}
     tr {background-color: inherit;}
-    tr:nth-child(2n-1) {background-color: #e2e3e0;}
-    tr:first-child {background-color: #eeedcd;}
+    tr:nth-child(2n-1) {background-color: #eff2f5;height:100%;}
+    tr:first-child {background-color: #567880;color:white;border:2px solid white;}
     th {font-family: 'Courier New', Courier, monospace;font-weight: lighter;border-right: 0px;}
+    .cpy-btn {background-color: #567880;border-top-right-radius: 8px;border-bottom-right-radius: 8px;border: 0px;margin-left: -2px;}
+    th {position: sticky;top: 0;}
   </style>
 </head>
 
@@ -180,30 +193,32 @@
     <span class="form-heading" style="margin-bottom:10px;">
       Control and Monitor your Current Jobs
     </span>
+    <hr/>
     <span>
       <form enctype="multipart/form-data" action="<?php echo $_SERVER['PHP_SELF'];?>" method="POST">
       <span class="form-h2"> Currently Running Jobs for User: </span> <br/>
-      <input type="text" name="usr_id_search" value="<?php echo $usr_name;?>"/>
-      <input type="submit" value="Search" name="Search"/>
+      <input type="text" id="usr_name" name="usr_name" value="<?php echo $usr_name;?>"/>
+      <input type="hidden" name="search_only" value="1"/> 
+      <input style="height: 24pt;margin-left: -7px;background-color: #567880;color: #fff;border-top-right-radius: 8px;border-bottom-right-radius: 8px;border: 1px solid grey;" type="submit" value="Search" name="Search"/>
     </form>
   </span>
   <br/>
     <table class="job_list_table">
       <tr>
-        <th> Time Stamp </th> <th> User </th> <th> Job-Id </th> <th> Job Status </th> <th> Action </th> <th> Result </th>
+        <th> Time Stamp </th> <th> User </th> <th> Job-Id </th> <th> Job Status </th> <th> Result </th> <th> Action </th>
       </tr>
       <?php
         $output = null;
         chdir("scheduler");
         $cmd = "python3 scheduler.py l " . $usr_name;
         exec( $cmd, $output);
-        
+        $job_states = array("Queued","Running","Error","Stoppped","Finished");
         for ( $i=0; $i < count($output); $i++ ) {
           echo "<tr>";
           $row = explode ( ',' , substr($output[$i],0,-1) );
           for ($j=0; $j < count($row)+2; $j++ ) {
-            $txt = count($row) <= $j ? $row[$j] : "N/A";
-            echo "<td>" . "Ho" . "</td>";
+            $txt = count($row) <= $j ? ( $j == 4 ? ( $row[3] == 4 ? "Download" : "N/A" ) : "X Cancel Job" ) : ($j==3 ? $job_states[ (int)$row[$j] ] : $row[$j]);
+            echo "<td>" . $txt . "</td>";
           }
           echo "</tr>";
         }
@@ -214,7 +229,7 @@
   </div>
       
     <div class="form_div">
-        <span class="form-heading"> Submit New Job </span>
+        <span class="form-heading"> Submit New Job </span><hr/>
         <!-- TODO: Do not let user submit form without valid form data. -->
         <form enctype="multipart/form-data" style="padding-top:10px;" title="Submit New Job" action="<?php echo $_SERVER['PHP_SELF'];?>" method="POST">
           
@@ -225,10 +240,14 @@
           
           <!-- TODO: If username is already present in the post field, then display that. -->
           <span class="form-h2"> Enter user name/alias:  </span> <br>
+          <span style="display:flex;flex-direction:row;">
           <input id="usr_name" type="text" value="<?php
           echo $usr_name;
-           ?>" title="Note your user name." name="usr_name" placeholder= "Enter your name" />
-          <br/>
+           ?>" title="Note your user name." name="usr_name" placeholder= "Enter your name"/>
+
+          <button title="Copy User Name to Clipboard." class="cpy-btn"  onclick="copy_to_clipboard()">📄</button>
+          </span>
+          
           <span style="font-size:12px;"><i> (Note this for future Refrence.) </i></span>
           <br/><br/>
           
@@ -239,7 +258,7 @@
           <br/>
           <br/>
           <!-- Don't let the user submit without proper validation. -->
-          <input class="submit_button" type="submit">
+          <input class="submit_button" type="submit" name="Submit" value="Submit"/>
           <br/>
         </form>
     </div>

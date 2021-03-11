@@ -5,7 +5,10 @@ import sys
 import time
 import sqlite3
 import os
+import zlib
 
+#TODO:
+# Jobs not going pending even if the limit has been reached (Done)
 
 def script_directory(f):
     return os.path.join( os.path.dirname(sys.argv[0]) , f)
@@ -89,8 +92,6 @@ def refresh():
                 conn.commit()
                 open_slots-=1
 
-            
-
     # else do nothing
     
 
@@ -114,7 +115,8 @@ def main (args):
     # * Running   (1), Meaning the job is running.
     # * Error     (2), Meaning the job encountered some error while running.
     # * Stoppped  (3), Meaning the job has been stopped manually.
-    # * Finished  (4), Mening the job has been completed and files are ready to download.
+    # * Finished  (4), Meaning the job has been completed and files are ready to download.
+    # * N/A       (5), No data Available (Not Used in cheduler only in UI)
     refresh()
     if len(args) == 1:
         sch_log("No args Supplied.")
@@ -135,7 +137,7 @@ def main (args):
             r = cursor.fetchall()
             sch_log(r)
             if r == []:
-                print("No Jobs for given Credentials")
+                print("N/A,N/A,N/A, 5,")
                 return
             # r = str(r)[1:-1]
             # print( "|".join( r.split("),")).strip('(') )
@@ -169,13 +171,15 @@ def main (args):
             
             # The time stamp is given when jobs reaches the scheduler, irrespective of when it starts executing.
             timestamp = int(time.time())
+            
+            sch_log('Currently running jobs are: %d and max jobs are %d'%(int(currently_running_jobs),MAX_RUNNING_JOBS_AT_ONCE))
 
-            if currently_running_jobs+1 == MAX_RUNNING_JOBS_AT_ONCE:
+            if (int(currently_running_jobs)+1) > MAX_RUNNING_JOBS_AT_ONCE:
                 #if the # of jobs is equal to limit the put it as pending in the db
+                sch_log("Job has been put in pending queue.")
                 status = 0 # Pending
                 q = "INSERT INTO jobs  	(timestamp, usr_name, job_id, job_status)\
                 VALUES ('%s', '%s', '%s' , '%d' )"%(timestamp, args[2] ,  args[3], status )
-
                 cursor = conn.execute(q)
                 conn.commit()
             else:
@@ -183,14 +187,16 @@ def main (args):
                 # This will naturally increase the running count.
                 status = 1 #running.
                 try:
-                    subprocess.Popen(['bash', 'jobber.sh',args[2],args[3]] , stdout=open("jobber_out.txt" , 'w') )
-                except:
+                    subprocess.Popen(['bash', 'jobber.sh',args[2],args[3], str(zlib.crc32(bytes( args[2]+"salt"+args[3] ,"utf-8"))) ] , stdout=open("jobber_out.txt" , 'w') )
+                except Exception as e:
+                    sch_log(e)
                     status = 2
                 
                 q = "INSERT INTO jobs  	(timestamp, usr_name, job_id, job_status)\
                 VALUES ('%s', '%s', '%s' , '%d' )"%(timestamp, args[2] ,  args[3], status )
                 cursor = conn.execute(q)
                 conn.commit()
+                sch_log("Job has been put in running queue.")
                 
     # Update the status of the Job
     elif cmd == 'u': # {$FILENAME (0), $CMD (1), $USR_NAME (2), $JOB_ID (3), $STATUS (4) }

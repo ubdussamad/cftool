@@ -1,5 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
+
 <?php
     function get_client_ip() {
       $ipaddress = '';
@@ -19,205 +20,131 @@
           $ipaddress = 'UNKNOWN';
       return $ipaddress;
     }
-
+    $usr_ip     = get_client_ip();
     $new_page_load = false;
     # TODO: Maybe even verify file data too.
-    # Impliment refreshing mechnish ofr the list.
+    # Impliment auto periodic refreshing mechanism for the list.
     # Impliment Job Submittion here only.
-    if ( (empty($_POST['usr_name']) and empty($_POST['usr_name']))  ) {
-      // Means this is a fresh page load.
+    if ( !isset($_POST['usr_name']) and !isset($_POST['job_name']) and !isset($_POST['search_only']) ) {
+      // If all three of these are not set then it means it's a fresh page load.
+      // echo "<script>alert(\"New Page load.\")</script>";
       $new_page_load = true;
       $usr_name =  "user@". crc32(time() . get_client_ip() . rand(10,100) )%100000;
     }
 
-    else {
+    else if ($_POST["search_only"] == 1) {
+      // This is the case where the user is only searching.
+      // When searching this username itself becomes the default job submittion username.
+      // And the job_name is automatically genrated everytime anyways.
+      // echo "<script>alert(\"Only Searching\")</script>";
       $usr_name   = $_POST['usr_name'];
     }
 
-    // $filename   = $_FILES['sif_file']['name'];
-    // $file_type  = $_FILES['sif_file']['type'];
-    // $file_size  = $_FILES['sif_file']['size'];
+    else if ($_POST["search_only"] == 0 and !empty($_POST['usr_name']) and !empty($_POST['job_name']) ) {
+      // This is the case where user is submitting a job.
+      // echo "<script>alert(\"Only Submitting job!\")</script>";
+      $usr_name   = $_POST['usr_name'];
+      $job_name   = $_POST['job_name'];
 
-    $usr_ip     = get_client_ip();
-    $job_name   = $_POST['job_name'];
-    
+      $filename   = $_FILES['sif_file']['name'];
+      $file_type  = $_FILES['sif_file']['type'];
+      $file_size  = $_FILES['sif_file']['size'];
 
+      # Create a special folder for every upload in upload folder.
+      # Upload the input file.
+      # Check the file for errors.
+      # Run jobber on that specific folder.
+
+      $target_dir = "upload/"; // NOTE: This is very Specific to linux, because of the forward slash.
+      $target_dir = $target_dir . 'output_' .  crc32( $usr_name . "salt" . $job_name ) . "/";
+      mkdir($target_dir  , $mode=0777 , $recursive=true);
+      $file_tmp =$_FILES['sif_file']['tmp_name'];
+      $target_file = $target_dir . basename($_FILES["sif_file"]["name"]);
+      // # Check the file extension and data too.
+      // $FileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
+      move_uploaded_file($file_tmp, $target_file);  
+
+
+      chdir("scheduler");
+      $cmd = "python3 scheduler.py a " . $usr_name . " " .  $job_name;
+      exec( $cmd, $output);
+      chdir("../");
+      // echo "<script>alert(\"Job Submitted!\")</script>";
+    }
 ?>
+
 <head>
+
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <title> Community Finding Tool - SCIS, JNU </title>
-  <script type="text/javascript">
-  function copy_to_clipboard() {
-  var copyText = document.getElementById("usr_name");
-  copyText.select();
-  copyText.setSelectionRange(0, 99999); /* For mobile devices */
-  document.execCommand("copy");
-} 
-  </script>
-  <style type="text/css" media="screen">
-    body {
-      display: flex;
-      flex-direction: column;
-      align-items: center;}
-    .header_section {
-      border-radius: 5px;
-      font-family: "Courier";
-      padding:20px;
-      padding-left: 200px;
-      width:70%;
-      background: rgb(27,55,64);
-      background-image: url('media/header_art.png'), -moz-linear-gradient(90deg, rgba(27,55,64,1) 13%, rgba(92,116,119,1) 71%, rgba(82,98,117,1) 85%);
-      background-image: url('media/header_art.png'), -webkit-linear-gradient(90deg, rgba(27,55,64,1) 13%, rgba(92,116,119,1) 71%, rgba(82,98,117,1) 85%);
-      background-image: url('media/header_art.png'), linear-gradient(90deg, rgba(27,55,64,1) 13%, rgba(92,116,119,1) 71%, rgba(82,98,117,1) 85%);
-      background-repeat: no-repeat, repeat;
-      background-position: left;
-      background-size: contain;
-      filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#1b3740",endColorstr="#526275",GradientType=1);
-      box-shadow: 2px 3px 6px #3b3b3b;}
-    .vertical_container {
-      display: flex;
-      flex-direction: row;}
-    .body_section {
-      width:80%;
-      border: rgb(99, 99, 99) solid 2px;
-      padding:20px;
-      margin:2%;
-      box-shadow: 2px 6px 4px rgb(156, 156, 156);
-      border-radius: 4px;
-      display: flex;
-      align-content: center ;
-      align-items: center;
-      flex-direction:column;}
-    h1 {
-      color:rgb(255, 255,255);
-      text-shadow: rgb(12,12,12);
-      }
-    h2 {
-      color: rgb(255, 255, 255);
-      font-size: 20px;
-      }
-      .intro {
-        font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      }
-    .form_div {
-      padding:15px;
-      
-      margin:2%;
-      margin-top: 0%;
-      border: 1px solid rgb(100,100,100);
-      box-shadow: 2px 2px 3px inset rgba(156, 156, 156,0.1);
-      border-radius: 4px;
-      background-color: rgb(238, 237, 205);
-      align-content: center;
-      width:40%;}
-    button {
-      color:green; }
-    .form-h2 {
-      font-weight: 900;
-      font-family:'Courier';}
-    .submit_button {
-      color: white;
-      width: 50%;
-      border: 1px solid #848484;
-      padding: 6px;
-      border-radius: 7px;
-      background: #567880;}
-    .form-heading {
-      color: #213d73;
-      padding-bottom: 0;
-      text-align: center;
-      align-self: center;
-      margin-bottom: 10px;
-      font-size: 127%;
-      font-weight: bold;
-      font-family: courier;}
-    .footer {
-      border-top: 1px solid rgb(100,100,100);
-      width:80%;
-      font-size: 14px;
-      font-weight: bold;
-      font-family: "courier";}
-    .job_list_div {
-      padding: 15px;
-      margin-bottom: 2%;
-      margin-top: 2%;
-      margin-top: 0%;
-      border: 1px solid rgb(100,100,100);
-      box-shadow: 2px 2px 3px inset rgba(156, 156, 156,0.1);
-      border-radius: 4px;
-      background-color: rgb(238, 237, 205);
 
-      align-content: center;}
-    .job_list_table {
-      border-radius: 4px;
-      border:1px solid black;
-      background-color: #fff;
-      padding: 6px;
-      border-collapse: collapse;
-      font-family: 'Courier New', Courier, monospace;
-      table-layout: fixed;
-      width: 100%;}
-    th,td {
-      border-bottom: 1px solid black;
-      border-right:  1px solid black;
-      padding: 6px;
-      word-wrap: break-word;
-      /* word-break: break-all; */
-      border-radius: 2px;}
-    tr {background-color: inherit;}
-    tr:nth-child(2n-1) {background-color: #eff2f5;height:100%;}
-    tr:first-child {background-color: #567880;color:white;border:2px solid white;}
-    th {font-family: 'Courier New', Courier, monospace;font-weight: lighter;border-right: 0px;}
-    .cpy-btn {background-color: #567880;border-top-right-radius: 8px;border-bottom-right-radius: 8px;border: 0px;margin-left: -2px;}
-    th {position: sticky;top: 0;}
-  </style>
+  <script type="text/javascript">
+    function copy_to_clipboard() {
+      var copyText = document.getElementById("usr_name");
+      copyText.select();
+      copyText.setSelectionRange(0, 99999); /* For mobile devices */
+      document.execCommand("copy");
+    }
+  </script>
+
+  <link rel="stylesheet" href="style.css">
+
 </head>
 
 <body>
 
-<div class="header_section">
-  <h1 class="title_header">
-    Community Finding Tool
-  </h1>
-  <h2>
-  Complex Dynamics Lab,<br/>
-  School of Computational and Integrative Sciences,<br/>
-  Jawaharlal Nehru University
-  </h2>  
-</div>
+  <div class="header_section">
+    <h1 class="title_header">
+      Community Finding Tool
+    </h1>
+    <h2>
+      Complex Dynamics Lab,<br />
+      School of Computational and Integrative Sciences,<br />
+      Jawaharlal Nehru University
+    </h2>
+  </div>
 
-<div class="body_section">
-  <div class="vertical_container">
+  <div class="body_section">
 
-  <div class="job_list_div">
-    <span class="form-heading" style="margin-bottom:10px;">
-      Control and Monitor your Current Jobs
-    </span>
-    <hr/>
-    <span>
-      <form enctype="multipart/form-data" action="<?php echo $_SERVER['PHP_SELF'];?>" method="POST">
-      <span class="form-h2"> Currently Running Jobs for User: </span> <br/>
-      <input type="text" id="usr_name" name="usr_name" value="<?php echo $usr_name;?>"/>
-      <input type="hidden" name="search_only" value="1"/> 
-      <input style="height: 24pt;margin-left: -7px;background-color: #567880;color: #fff;border-top-right-radius: 8px;border-bottom-right-radius: 8px;border: 1px solid grey;" type="submit" value="Search" name="Search"/>
-    </form>
-  </span>
-  <br/>
-    <table class="job_list_table">
-      <tr>
-        <th> Time Stamp </th> <th> User </th> <th> Job-Id </th> <th> Job Status </th> <th> Result </th> <th> Action </th>
-      </tr>
-      <?php
+    <div class="vertical_container">
+
+      <div class="job_list_div">
+        <span class="form-heading" style="margin-bottom:10px;">
+          Control and Monitor your Current Jobs
+        </span>
+        <hr />
+        <span>
+          <form enctype="multipart/form-data" action="<?php echo $_SERVER['PHP_SELF'];?>" method="POST">
+            <span class="form-h2"> Currently Running Jobs for User: </span> <br />
+            <input type="text" id="usr_name" name="usr_name" value="<?php echo $usr_name;?>" />
+            <input type="hidden" name="search_only" value="1" />
+            <input
+              style="height: 24pt;margin-left: -7px;background-color: #567880;color: #fff;border-top-right-radius: 8px;border-bottom-right-radius: 8px;border: 1px solid grey;"
+              type="submit" value="Search" name="Search" />
+          </form>
+        </span>
+        <br />
+        <table class="job_list_table">
+          <tr>
+            <th> Time Stamp </th>
+            <th> User </th>
+            <th> Job-Id </th>
+            <th> Job Status </th>
+            <th> Result </th>
+            <th> Action </th>
+          </tr>
+          <?php
         $output = null;
         chdir("scheduler");
         $cmd = "python3 scheduler.py l " . $usr_name;
         exec( $cmd, $output);
-        $job_states = array("Queued","Running","Error","Stoppped","Finished");
+        $job_states = array("Queued","Running","Error","Stoppped","Finished","N/A");
         for ( $i=0; $i < count($output); $i++ ) {
           echo "<tr>";
           $row = explode ( ',' , substr($output[$i],0,-1) );
           for ($j=0; $j < count($row)+2; $j++ ) {
-            $txt = count($row) <= $j ? ( $j == 4 ? ( $row[3] == 4 ? "Download" : "N/A" ) : "X Cancel Job" ) : ($j==3 ? $job_states[ (int)$row[$j] ] : $row[$j]);
+            $link = "<a target=\"blank\" rel=\"noopener noreferrer\" href=\"../upload/output_" . crc32( $row[1] . "salt" . $row[2] ) . "/\">Download </a>";
+            $txt = count($row) <= $j ? ( $j == 4 ? ( $row[3] == 4 ? ( $link ) : "N/A" ) : "X Cancel Job" ) : ($j==3 ? $job_states[ (int)$row[$j] ] : $row[$j]);
             echo "<td>" . $txt . "</td>";
           }
           echo "</tr>";
@@ -225,77 +152,81 @@
 
         chdir("../");
       ?>
-    </table>
-  </div>
-      
-    <div class="form_div">
-        <span class="form-heading"> Submit New Job </span><hr/>
+        </table>
+      </div>
+
+      <div class="form_div">
+        <span class="form-heading"> Submit New Job </span>
+        <hr />
         <!-- TODO: Do not let user submit form without valid form data. -->
-        <form enctype="multipart/form-data" style="padding-top:10px;" title="Submit New Job" action="<?php echo $_SERVER['PHP_SELF'];?>" method="POST">
-          
+        <form enctype="multipart/form-data" style="padding-top:10px;" title="Submit New Job"
+          action="<?php echo $_SERVER['PHP_SELF'];?>" method="POST">
+          <input type="hidden" name="search_only" value="0" />
           <span class="form-h2"> Enter Job name or leave it default: </span> <br>
-          <input id="Name" type="text" name="job_name" value="<?php $job_id = 'Job@' . date('d-m-yh:i:s');echo $job_id;?>"/>
           
-          <br/><br/>
-          
+          <input id="Name" type="text" name="job_name"
+            value="<?php $job_id = 'Job@' . date('d-m-yh:i:s');echo $job_id;?>" />
+
+          <br /><br />
+
           <!-- TODO: If username is already present in the post field, then display that. -->
-          <span class="form-h2"> Enter user name/alias:  </span> <br>
+          <span class="form-h2"> Enter user name/alias: </span> <br>
           <span style="display:flex;flex-direction:row;">
+          
           <input id="usr_name" type="text" value="<?php
           echo $usr_name;
-           ?>" title="Note your user name." name="usr_name" placeholder= "Enter your name"/>
+           ?>" title="Note your user name." name="usr_name" placeholder="Enter your name" />
 
-          <button title="Copy User Name to Clipboard." class="cpy-btn"  onclick="copy_to_clipboard()">📄</button>
+          <button title="Copy User Name to Clipboard." class="cpy-btn" onclick="copy_to_clipboard()">📄</button>
           </span>
-          
+
           <span style="font-size:12px;"><i> (Note this for future Refrence.) </i></span>
-          <br/><br/>
-          
-          <input type="hidden" name="MAX_FILE_SIZE" value="30000" />
-          <span class="form-h2"> Select File: <i> (.sif) </i> </span> <br/>
-          <input id="file" type="file" name="sif_file" placeholder= "<?php $date = date('d-m-y h:i:s');echo $date; ?>" />
-          
-          <br/>
-          <br/>
+          <br /><br />
+
+          <!-- <input type="hidden" name="MAX_FILE_SIZE" value="30000" /> -->
+          <span class="form-h2"> Select File: <i> (.sif) </i> </span> <br />
+          <input id="file" type="file" name="sif_file" placeholder="<?php $date = date('d-m-y h:i:s');echo $date; ?>" />
+
+          <br />
+          <br />
           <!-- Don't let the user submit without proper validation. -->
-          <input class="submit_button" type="submit" name="Submit" value="Submit"/>
-          <br/>
+          <input class="submit_button" type="submit" name="Submit" value="Submit" />
+          <br />
         </form>
-    </div>
-  </div>
-
-  <div class="intro">
-        <p>
-          This tool lets you find all possible communities in your gene data.
-          Please use this tool and don't use any other tool since this tool is the best.
-          <br/><br/>
-          To use this just select the <i>.sif</i> file from your local drive and wait for 20 minutes.
-          <br/>
-          Your jobs will be put in queue and will be processed in the next available slot.
-          <br/>
-          You can view your Job queue using your name and download the finished data.
-          
-          <br/>
-          We use your IP/Credentials to track your jobs.
-          After completing your Jobs will stay on our server for 24hours and will be deleted afterwards.
-          <br><br>
-          We do not store any of your personal info, we just use your IP and a simple name for Job tracking.
-          We also don't use any cookies whatsoever.
-        </p>
+      </div>
     </div>
 
+    <div class="intro">
+      <p>
+        This tool lets you find all possible communities in your gene data.
+        Please use this tool and don't use any other tool since this tool is the best.
+        <br /><br />
+        To use this just select the <i>.sif</i> file from your local drive and wait for 20 minutes.
+        <br />
+        Your jobs will be put in queue and will be processed in the next available slot.
+        <br />
+        You can view your Job queue using your name and download the finished data.
 
-  <br/>
-  
-  <div class="footer">
-    <?php
+        <br />
+        We use your IP/Credentials to track your jobs.
+        After completing your Jobs will stay on our server for 24hours and will be deleted afterwards.
+        <br><br>
+        We do not store any of your personal info, we just use your IP and a simple name for Job tracking.
+        We also don't use any cookies whatsoever.
+      </p>
+    </div>
+
+
+    <br />
+
+    <div class="footer">
+      <?php
       $IP_IA = get_client_ip();
-      echo "<p>Copyright " . date('Y') . " SCIS, JNU | Your IP is: " . $IP_IA . "</p>";
-    ?>
-    <p> Incase of any error, kindly email to: ubdussamad@gmail.com </p>
-  </div>
+      echo "<p>Copyright " . date('Y') . " SCIS, JNU | Your IP is: " . $IP_IA . "</p>";?>
+      <p> Incase of any error, kindly email to: ubdussamad@gmail.com </p>
+    </div>
 
-</div>
+  </div>
 
 </body>
 </html>

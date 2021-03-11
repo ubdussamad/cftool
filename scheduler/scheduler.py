@@ -47,6 +47,7 @@ def refresh():
     # * If a job encounters some error, remove it from the list stat.
     # * If it's been 24Hours since the job has finished, delete the job and related files.
     # * If it's been 1hours since a job is running, just get rid of it.
+    # * If a job has status as cancelled, remove the job form the list irrespective of its age.
 
     sch_log("Refreshing.....")
     # Get the number of running jobs.

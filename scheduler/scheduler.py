@@ -87,8 +87,8 @@ def refresh():
                     sch_log("Exception happened while running Job_id: %s , %s"%(j_id,e))
                     status = 2
                 sch_log("Running Job_ID: %s"%(j_id))
-                q = "UPDATE jobs SET job_status = %s WHERE job_id = '%s' and usr_name='%s'"%(str(status),j_id,u_id)
-                cursor.execute(q)
+                q = "UPDATE jobs SET job_status = ? WHERE usr_name=? AND job_id=?"
+                cursor = conn.execute(q, (str(status), u_id, j_id) )
                 conn.commit()
                 open_slots-=1
 
@@ -131,9 +131,9 @@ def main (args):
         if len(args) == 3:
             # Search for name & IP addr , if exists then find running jobs.
             # Ensure safety by parsing the args using regex to check for injection.
-            q = "SELECT * from jobs WHERE usr_name='%s' "%(args[2])
-            sch_log(q)
-            cursor.execute(q)
+            # q = %(args[2])
+            # sch_log(q)
+            cursor.execute("SELECT * from jobs WHERE usr_name=? ",(args[2],))
             r = cursor.fetchall()
             sch_log(r)
             if r == []:
@@ -156,8 +156,8 @@ def main (args):
 
             # Search for pre existing jobs
 
-            q = "SELECT * from jobs WHERE job_id='%s' AND usr_name='%s' "%(args[3] , args[2])
-            cursor = conn.execute(q)
+            q = "SELECT * from jobs WHERE job_id=? AND usr_name=? "
+            cursor = conn.execute(q, (args[3] , args[2]) )
             r = cursor.fetchall()
 
             if r != []:
@@ -178,9 +178,8 @@ def main (args):
                 #if the # of jobs is equal to limit the put it as pending in the db
                 sch_log("Job has been put in pending queue.")
                 status = 0 # Pending
-                q = "INSERT INTO jobs  	(timestamp, usr_name, job_id, job_status)\
-                VALUES ('%s', '%s', '%s' , '%d' )"%(timestamp, args[2] ,  args[3], status )
-                cursor = conn.execute(q)
+                q = "INSERT INTO jobs  	(timestamp, usr_name, job_id, job_status) VALUES (?, ?, ? , ? )"
+                cursor = conn.execute(q, (timestamp, args[2], args[3], str(status) ) )
                 conn.commit()
             else:
                 #else run the job and put it as running in the db as running
@@ -192,9 +191,8 @@ def main (args):
                     sch_log(e)
                     status = 2
                 
-                q = "INSERT INTO jobs  	(timestamp, usr_name, job_id, job_status)\
-                VALUES ('%s', '%s', '%s' , '%d' )"%(timestamp, args[2] ,  args[3], status )
-                cursor = conn.execute(q)
+                q = "INSERT INTO jobs  	(timestamp, usr_name, job_id, job_status) VALUES (?, ?, ? , ? )"
+                cursor = conn.execute(q, (timestamp, args[2], args[3], str(status) ) )
                 conn.commit()
                 sch_log("Job has been put in running queue.")
                 
@@ -209,16 +207,16 @@ def main (args):
             print("Missing/Too Many Args: Try: ./schedular [$CMD] [$JOB_ID]")
             return
         
-        q = "SELECT * from jobs WHERE usr_name='%s' AND job_id='%s'"%( args[2], args[3] )
-        cursor = conn.execute(q)
+        q = "SELECT * from jobs WHERE usr_name=? AND job_id=?"
+        cursor = conn.execute(q, ( args[2], args[3] ) )
         r = cursor.fetchall()
 
         if r == []:
             print("No Such Job exists.")
             return
 
-        q = "UPDATE jobs SET job_status = '%s' WHERE usr_name='%s' AND job_id='%s'"%( args[4],args[2], args[3])
-        cursor = conn.execute(q)
+        q = "UPDATE jobs SET job_status = ? WHERE usr_name=? AND job_id=?"
+        cursor = conn.execute(q, (args[4],args[2],args[3]) )
         conn.commit()
 
     # Refresh the scheduler

@@ -41,12 +41,13 @@ body {
 
 h1 {
 	color: rgb(255, 255, 255);
-	text-shadow: rgb(12, 12, 12);
+	text-shadow: 3px 5px 3px #0b1213;
 }
 
 h2 {
 	color: rgb(255, 255, 255);
 	font-size: 20px;
+	text-shadow: -3px -2px 3px #0b1213;
 }
 
 .intro {
@@ -144,7 +145,7 @@ tr:nth-child(2n-1) {
 	height: 100%;
 }
 
-tr:first-child {
+tr.th {
 	background-color: #567880;
 	color: white;
 	border: 2px solid white;

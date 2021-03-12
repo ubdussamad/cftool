@@ -39,8 +39,8 @@ BUGS: TODO:
 
     else if ($_POST["search_only"] == 1) {
       // This is the case where the user is only searching.
-      // When searching this username itself becomes the default job submittion username.
-      // And the job_name is automatically genrated everytime anyways.
+      // When searching this username itself becomes the default job submission username.
+      // And the job_name is automatically generated every time anyways.
       // echo "<script>alert(\"Only Searching\")</script>";
       $usr_name   = $_POST['usr_name'];
     }
@@ -114,7 +114,7 @@ BUGS: TODO:
       }
     }
   </script>
-
+  <script src="https://www.kryogenix.org/code/browser/sorttable/sorttable.js"></script>
   <link rel="stylesheet" href="style.css">
 
 </head>
@@ -152,8 +152,8 @@ BUGS: TODO:
           </form>
         </span>
         <br />
-        <table class="job_list_table">
-          <tr>
+        <table class="job_list_table sortable">
+          <tr class="th">
             <th> Time Stamp </th>
             <th> User </th>
             <th> Job-Id </th>
@@ -166,7 +166,7 @@ BUGS: TODO:
         chdir("scheduler");
         $cmd = "python3 scheduler.py l " . $usr_name;
         exec( $cmd, $output);
-        $job_states = array("Queued","Running","Error","Stoppped","Finished","N/A");
+        $job_states = array("Queued","Running","Error","Stopped","Finished","N/A");
         for ( $i=0; $i < count($output); $i++ ) {
           echo "<tr>";
           $row = explode ( ',' , substr($output[$i],0,-1) );
@@ -208,7 +208,7 @@ BUGS: TODO:
           <!-- <button title="Copy User Name to Clipboard." class="cpy-btn" onclick="copy_to_clipboard()">📄</button> -->
           </span>
 
-          <span style="font-size:12px;"><i> (Note this for future Refrence.) </i></span>
+          <span style="font-size:12px;"><i> (Note this for future Reference.) </i></span>
           <br /><br />
 
           <!-- <input type="hidden" name="MAX_FILE_SIZE" value="30000" /> -->

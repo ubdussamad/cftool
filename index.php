@@ -37,7 +37,7 @@ BUGS: TODO:
       $usr_name =  "user@". crc32(time() . get_client_ip() . rand(10,100) )%100000;
     }
 
-    else if ($_POST["search_only"] == 1) {
+    else if ($_POST["search_only"] == 1 and !isset($_POST["cancel_job"])) {
       // This is the case where the user is only searching.
       // When searching this username itself becomes the default job submission username.
       // And the job_name is automatically generated every time anyways.
@@ -45,7 +45,7 @@ BUGS: TODO:
       $usr_name   = $_POST['usr_name'];
     }
 
-    else if ($_POST["search_only"] == 0 and !empty($_POST['usr_name']) and !empty($_POST['job_name']) ) {
+    else if ($_POST["search_only"] == 0 and !isset($_POST["cancel_job"]) and !empty($_POST['usr_name']) and !empty($_POST['job_name']) ) {
       // This is the case where user is submitting a job.
       // echo "<script>alert(\"Only Submitting job!\")</script>";
       $usr_name   = $_POST['usr_name'];
@@ -57,7 +57,7 @@ BUGS: TODO:
 
       # Create a special folder for every upload in upload folder.
       # Upload the input file.
-      # Check the file for errors.
+      # Check the file for errors and the file's size too.
       # Run jobber on that specific folder.
 
       $target_dir = "upload/"; // NOTE: This is very Specific to linux, because of the forward slash.
@@ -76,6 +76,20 @@ BUGS: TODO:
       chdir("../");
       // echo "<script>alert(\"Job Submitted!\")</script>";
     }
+
+    else if (isset($_POST["cancel_job"]) and $_POST["cancel_job"] == 1) {
+      $usr_name   = $_POST['usr_name'];
+      $job_name_to_delete   = $_POST['job_name'];
+      chdir("scheduler");
+      $cmd = "python3 scheduler.py u " . $usr_name . " " .  $job_name_to_delete . " 3";
+      exec( $cmd, $output);
+      chdir("../");
+
+    }
+
+    else {
+      echo "<script>alert(\"Invalid POST data!\")</script>";
+    }
 ?>
 
 <head>
@@ -91,10 +105,12 @@ BUGS: TODO:
       // document.execCommand("copy");
       navigator.clipboard.writeText(copyText);
     }
+    // TODO:
     // Min file size and max file size validation is done here
     // Also, file type check could be done here.
+    // Don't allow job submission if there are spaces in the username or job id.
     // Dont abuse this, the server itself wont accept a larger or smaller file size anyways.
-    function validate_job_submittion() {
+    function validate_job_submission() {
       var a = document.getElementById('job_name');
       var b = document.getElementById('usr_name');
       var file = document.getElementById('file_name').files[0];
@@ -104,7 +120,7 @@ BUGS: TODO:
             return true;       
         }
         else {
-          alert("File is  over 50Mb in size!");
+          alert("Inappropriate file size! (1MB-50MB)");
           return false;
         }
       }
@@ -172,7 +188,13 @@ BUGS: TODO:
           $row = explode ( ',' , substr($output[$i],0,-1) );
           for ($j=0; $j < count($row)+2; $j++ ) {
             $link = "<a target=\"blank\" rel=\"noopener noreferrer\" href=\"../upload/output_" . crc32( $row[1] . "salt" . $row[2] ) . "/\">Download </a>";
-            $txt = count($row) <= $j ? ( $j == 4 ? ( $row[3] == 4 ? ( $link ) : "N/A" ) : "X Cancel Job" ) : ($j==3 ? $job_states[ (int)$row[$j] ] : $row[$j]);
+            
+            $cancel_job = "<form method=\"POST\"> <input type=\"hidden\" value=\"1\" name=\"cancel_job\"/>" 
+            ."<input type=\"hidden\" name=\"usr_name\" value=\"" . $row[1] ."\"/>".
+            "<input type=\"hidden\" name=\"job_name\" value=\"" . $row[2] ."\"/>".
+            "<input type=\"submit\" value=\"Cancel\"> </form>";
+
+            $txt = count($row) <= $j ? ( $j == 4 ? ( $row[3] == 4 ? ( $link ) : "N/A" ) : ($row[0]=="N/A" ? "N/A" : $cancel_job) ) : ($j==3 ? $job_states[ (int)$row[$j] ] : $row[$j]);
             echo "<td>" . $txt . "</td>";
           }
           echo "</tr>";
@@ -187,7 +209,7 @@ BUGS: TODO:
         <span class="form-heading"> Submit New Job </span>
         <hr />
         <!-- TODO: Do not let user submit form without valid form data. -->
-        <form onsubmit="return validate_job_submittion()" enctype="multipart/form-data" style="padding-top:10px;" title="Submit New Job"
+        <form onsubmit="return validate_job_submission()" enctype="multipart/form-data" style="padding-top:10px;" title="Submit New Job"
           action="<?php echo $_SERVER['PHP_SELF'];?>" method="POST">
           <input type="hidden" name="search_only" value="0" />
           <span class="form-h2"> Enter Job name or leave it default: </span> <br>

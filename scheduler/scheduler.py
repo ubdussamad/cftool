@@ -19,6 +19,7 @@ SCH_DEBUG = 0
 
 MAX_RUNNING_JOBS_AT_ONCE = 4
 MAX_HISTORY_RETENTION_LIMIT_HOURS = 24
+MAX_TIME_A_JOB_CAN_RUN_FOR_HOURS = 1
 
 
 try:
@@ -46,17 +47,17 @@ def refresh():
     # Responsibilities:
     # Done:
     # * If slots are open and jobs are in waiting queue, put them in running queue.
-    # TODO:
     # * If a job encounters some error, remove it from the list stat.
     # * If it's been 24Hours since the job has finished, delete the job and related files.
     # * If it's been 1hours since a job is running, just get rid of it.
     # * If a job has status as cancelled, remove the job form the list irrespective of its age.
 
     sch_log("Refreshing.....")
+
+    # Forwarding the queue.
     # Get the number of running jobs.
     cursor.execute("SELECT count(*) FROM jobs WHERE job_status=1")
     currently_running_jobs = int(cursor.fetchone()[0])
-
     sch_log("Currently running Jobs are: %d"%currently_running_jobs)
     # if number of jobs is less than limit
     if currently_running_jobs < MAX_RUNNING_JOBS_AT_ONCE:
@@ -79,10 +80,10 @@ def refresh():
                 status = 1
                 try:
                     # Giving the subprocess call a diffrent stdout files
-                    # eliminates the issue of php waiting for the call to finish before loadibng the whole page.
-                    # There could be an issue when mutiple jobs might use the same stdout file for printing output
+                    # eliminates the issue of php waiting for the call to finish before loading the whole page.
+                    # There could be an issue when multiple jobs might use the same stdout file for printing output
                     # This could be eliminated by creating a specific file for each job_id.
-                    subprocess.Popen(['bash', 'jobber.sh',str(u_id),str(j_id)] , stdout=open("jobber_out.txt" , 'w'))
+                    subprocess.Popen(['bash', 'jobber.sh',str(u_id),str(j_id), str(zlib.crc32(bytes( u_id+"salt"+j_id ,"utf-8"))) ] , stdout=open("jobber_out.txt" , 'w'))
                 except Exception as e:
                     sch_log("Exception happened while running Job_id: %s , %s"%(j_id,e))
                     status = 2
@@ -92,8 +93,28 @@ def refresh():
                 conn.commit()
                 open_slots-=1
 
-    # else do nothing
-    
+    # Clearing old and cancelled jobs
+    cursor.execute("SELECT * FROM jobs WHERE job_status=2 or job_status=3 or job_status=4")
+    likely_removeable_jobs = cursor.fetchall()
+    count = len(likely_removeable_jobs)
+    if (count):
+        timestamp = int(time.time())
+        cursor.execute("DELETE FROM jobs WHERE (job_status='4' and (? - timestamp > %d)) or\
+                        (job_status='1' and (? - timestamp > %d)) or\
+                        (job_status='3' or job_status='2')"%(int(MAX_HISTORY_RETENTION_LIMIT_HOURS*3600),int(MAX_TIME_A_JOB_CAN_RUN_FOR_HOURS*60)),(timestamp,timestamp))
+        conn.commit()
+
+    for i in likely_removeable_jobs:
+        crc = str(zlib.crc32( bytes( i[1]+"salt"+i[2] ,"utf-8") ))
+        if i[3] == 3 or i[3] == 2:
+            #Delete Immediately
+            subprocess.call(["rm", "-r", "../upload/output_"+crc ])
+        elif i[3] == 1 and ( timestamp-int(i[0]) > (int(MAX_TIME_A_JOB_CAN_RUN_FOR_HOURS*60)) ):
+            subprocess.call(["rm", "-r", "../upload/output_"+crc ])
+        elif i[3] == 4 and ( timestamp-int(i[0]) > (int(MAX_HISTORY_RETENTION_LIMIT_HOURS*3600)) ):
+            subprocess.call(["rm", "-r", "../upload/output_"+crc ])
+
+
 
 def main (args):
     global cursor
@@ -101,7 +122,7 @@ def main (args):
     #Parse the command (1st argument)
     #Parse the Files
 
-    # Type of commands, 
+    # Type of commands, job_status=1
     # l -> List All jobs for a User @ IP (args Usr , IP)
     # u -> Update Job Status for a Job (args: Usr , IP , Job-id)
     # a -> Append Job,if that job isn't already there (args: Usr , IP , Job-id , File paths )
@@ -116,8 +137,7 @@ def main (args):
     # * Error     (2), Meaning the job encountered some error while running.
     # * Stoppped  (3), Meaning the job has been stopped manually.
     # * Finished  (4), Meaning the job has been completed and files are ready to download.
-    # * N/A       (5), No data Available (Not Used in cheduler only in UI)
-    refresh()
+    # * N/A       (5), No data Available (Not Used in scheduler only in UI)
     if len(args) == 1:
         sch_log("No args Supplied.")
         return
@@ -127,7 +147,6 @@ def main (args):
     # List all running Jobs
     if cmd == 'l': # {$FILENAME (0), $CMD (1), $USR_NAME (2)}
         sch_log("Listing ... \n %s"%', '.join(args))
-        refresh()
         if len(args) == 3:
             # Search for name & IP addr , if exists then find running jobs.
             # Ensure safety by parsing the args using regex to check for injection.
@@ -150,8 +169,6 @@ def main (args):
     # Append a new job
     elif cmd == 'a': # {$FILENAME (0), $CMD (1), $USR_NAME (2), $JOB_ID (3) }
         sch_log("Appending ... \n %s"%', '.join(args))
-        refresh()
-
         if len(args) == 4: 
 
             # Search for pre existing jobs
@@ -221,11 +238,9 @@ def main (args):
 
     # Refresh the scheduler
     elif cmd == 'r':
-        refresh()
         return
     
     else:
-        refresh()
         sch_log("Bad or no command.")
         print("Invalid or no command given.")
 
@@ -233,5 +248,5 @@ def main (args):
 
 if __name__ == "__main__":
     # print("V6-SCHED")
-    # refresh()
+    refresh()
     main(sys.argv)

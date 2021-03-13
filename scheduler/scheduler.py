@@ -7,8 +7,6 @@ import sqlite3
 import os
 import zlib
 
-#TODO:
-# Jobs not going pending even if the limit has been reached (Done)
 
 def script_directory(f):
     return os.path.join( os.path.dirname(sys.argv[0]) , f)

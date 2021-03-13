@@ -29,7 +29,6 @@ BUGS: TODO:
     $new_page_load = false;
     # TODO: Maybe even verify file data too.
     # Impliment auto periodic refreshing mechanism for the list.
-    # Impliment Job Submittion here only.
     if ( !isset($_POST['usr_name']) and !isset($_POST['job_name']) and !isset($_POST['search_only']) ) {
       // If all three of these are not set then it means it's a fresh page load.
       // echo "<script>alert(\"New Page load.\")</script>";
@@ -208,7 +207,6 @@ BUGS: TODO:
       <div class="form_div">
         <span class="form-heading"> Submit New Job </span>
         <hr />
-        <!-- TODO: Do not let user submit form without valid form data. -->
         <form onsubmit="return validate_job_submission()" enctype="multipart/form-data" style="padding-top:10px;" title="Submit New Job"
           action="<?php echo $_SERVER['PHP_SELF'];?>" method="POST">
           <input type="hidden" name="search_only" value="0" />
@@ -218,8 +216,6 @@ BUGS: TODO:
             value="<?php $job_id = 'Job@' . date('d-m-yh:i:s');echo $job_id;?>" />
 
           <br /><br />
-
-          <!-- TODO: If username is already present in the post field, then display that. -->
           <span class="form-h2"> Enter user name/alias: </span> <br>
           <span style="display:flex;flex-direction:row;">
           

@@ -7,6 +7,15 @@ BUGS: TODO:
 
 
 <?php
+
+    $EN_ALERT_BASED_LOGIN = false;
+
+    function debugLog($alertMessage) {
+      global $EN_ALERT_BASED_LOGIN;
+      if ($EN_ALERT_BASED_LOGIN) {
+        echo "<script> alert(\"Debug Alert: <br/> " . $alertMessage . "\");</script>";
+      }
+    }
     function get_client_ip() {
       $ipaddress = '';
       if (getenv('HTTP_CLIENT_IP'))
@@ -28,7 +37,7 @@ BUGS: TODO:
     $usr_ip     = get_client_ip();
     $new_page_load = false;
     # TODO: Maybe even verify file data too.
-    # Impliment auto periodic refreshing mechanism for the list.
+    # Implement auto periodic refreshing mechanism for the list.
     if ( !isset($_POST['usr_name']) and !isset($_POST['job_name']) and !isset($_POST['search_only']) ) {
       // If all three of these are not set then it means it's a fresh page load.
       // echo "<script>alert(\"New Page load.\")</script>";
@@ -97,6 +106,7 @@ BUGS: TODO:
   <title> Community Finding Tool - SCIS, JNU </title>
 
   <script type="text/javascript">
+
     function copy_to_clipboard() {
       var copyText = document.getElementById("usr_name");
       // copyText.select();
@@ -108,14 +118,14 @@ BUGS: TODO:
     // Min file size and max file size validation is done here
     // Also, file type check could be done here.
     // Don't allow job submission if there are spaces in the username or job id.
-    // Dont abuse this, the server itself wont accept a larger or smaller file size anyways.
+    // Don't abuse this, the server itself wont accept a larger or smaller file size anyways.
     function validate_job_submission() {
       var a = document.getElementById('job_name');
       var b = document.getElementById('usr_name');
       var file = document.getElementById('file_name').files[0];
 
       if(file) {// perform the size check only if a file is present.
-        if(file.size > 597152 && file.size < 50097152) { // 50 MB (this size is in bytes)
+        if(file.size > 100 && file.size < 26214400  ) { // 50 MB (this size is in bytes)
             return true;       
         }
         else {
@@ -157,7 +167,7 @@ BUGS: TODO:
         </span>
         <hr />
         <span>
-          <form enctype="multipart/form-data" action="<?php echo $_SERVER['PHP_SELF'];?>" method="POST">
+          <form name="search" id="search" enctype="multipart/form-data" action="<?php echo $_SERVER['PHP_SELF'];?>" method="POST">
             <span class="form-h2"> Currently Running Jobs for User: </span> <br />
             <input type="text" id="usr_name" name="usr_name" value="<?php echo $usr_name;?>" />
             <input type="hidden" name="search_only" value="1" />
@@ -176,7 +186,7 @@ BUGS: TODO:
             <th> Result </th>
             <th> Action </th>
           </tr>
-          <?php
+        <?php
         $output = null;
         chdir("scheduler");
         $cmd = "python3 scheduler.py l " . $usr_name;
@@ -230,7 +240,7 @@ BUGS: TODO:
           <br /><br />
 
           <!-- <input type="hidden" name="MAX_FILE_SIZE" value="30000" /> -->
-          <span class="form-h2"> Select File: <i> (.sif) </i> </span> <br />
+          <span class="form-h2"> Select File: <i> (.tsv) </i> </span> <br />
           <input id="file_name" type="file" name="sif_file" placeholder="<?php $date = date('d-m-y h:i:s');echo $date; ?>" />
 
           <br />

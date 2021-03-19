@@ -7,7 +7,6 @@ BUGS: TODO:
 
 
 <?php
-
     $EN_ALERT_BASED_LOGIN = false;
 
     function debugLog($alertMessage) {
@@ -70,14 +69,15 @@ BUGS: TODO:
 
       $target_dir = "upload/"; // NOTE: This is very Specific to linux, because of the forward slash.
       $target_dir = $target_dir . 'output_' .  crc32( $usr_name . "salt" . $job_name ) . "/";
-      mkdir($target_dir  , $mode=0777 , $recursive=true);
+      
+      mkdir($target_dir  , $mode=0777 );
+
+
       $file_tmp =$_FILES['sif_file']['tmp_name'];
-      $target_file = $target_dir . basename($_FILES["sif_file"]["name"]);
+      $target_file = $target_dir . "input.tsv";//basename($_FILES["sif_file"]["name"]);
       // # Check the file extension and data too.
       // $FileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
       move_uploaded_file($file_tmp, $target_file);  
-
-
       chdir("scheduler");
       $cmd = "python3 scheduler.py a " . $usr_name . " " .  $job_name;
       exec( $cmd, $output);
@@ -92,7 +92,6 @@ BUGS: TODO:
       $cmd = "python3 scheduler.py u " . $usr_name . " " .  $job_name_to_delete . " 3";
       exec( $cmd, $output);
       chdir("../");
-
     }
 
     else {
@@ -169,11 +168,9 @@ BUGS: TODO:
         <span>
           <form name="search" id="search" enctype="multipart/form-data" action="<?php echo $_SERVER['PHP_SELF'];?>" method="POST">
             <span class="form-h2"> Currently Running Jobs for User: </span> <br />
-            <input type="text" id="usr_name" name="usr_name" value="<?php echo $usr_name;?>" />
             <input type="hidden" name="search_only" value="1" />
-            <input
-              style="height: 24pt;margin-left: -7px;background-color: #567880;color: #fff;border-top-right-radius: 8px;border-bottom-right-radius: 8px;border: 1px solid grey;"
-              type="submit" value="Search" name="Search" />
+            <input id="sch_txt"    type="text" id="usr_name" name="usr_name" value="<?php echo $usr_name;?>" />
+            <input class="sch_submit" type="submit" value="Search" name="Search" />
           </form>
         </span>
         <br />
@@ -229,9 +226,7 @@ BUGS: TODO:
           <span class="form-h2"> Enter user name/alias: </span> <br>
           <span style="display:flex;flex-direction:row;">
           
-          <input id="usr_name" type="text" value="<?php
-          echo $usr_name;
-           ?>" title="Note your user name." name="usr_name" placeholder="Enter your name" />
+          <input id="usr_name" type="text" value="<?php echo $usr_name;?>" title="Note your user name." name="usr_name" placeholder="Enter your name" />
 
           <!-- <button title="Copy User Name to Clipboard." class="cpy-btn" onclick="copy_to_clipboard()">📄</button> -->
           </span>

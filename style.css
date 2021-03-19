@@ -170,3 +170,15 @@ th {
 	top: 0;
 }
 
+input.sch_submit {
+	/* display: inline-block; */
+	margin-left: -7px;
+	border-bottom-left-radius: 0px;
+	border-top-left-radius: 0px;
+	border-radius: 4px;
+	color:green;
+}
+
+#sch_txt {
+	color:green !important;
+}

@@ -1,1 +1,3 @@
-Job@18-03-2112:28:50 is Done
+Moving to output DIR
+Ran the script.
+Job@19-03-2101:58:29 is Done

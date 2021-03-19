@@ -150,7 +150,7 @@ BUGS: TODO:
       Community Finding Tool
     </h1>
     <h2>
-      Complex Dynamics Lab,<br />
+      <span class="cdl_heading">Complex Dynamics Lab, </span> <br />
       School of Computational and Integrative Sciences,<br />
       Jawaharlal Nehru University
     </h2>
@@ -248,6 +248,10 @@ BUGS: TODO:
     </div>
 
     <div class="intro">
+    <!-- <div class="scis_logo_outer">
+      <span class="scis_logo_inner_1"> COMPLEX DYNAMICS LAB </span> <br/>
+      <span class="scis_logo_inner_2"> SCIS, JAWAHARLAL NEHRU UNIVERSITY </span> <br/>
+    </div> -->
       <p>
         This tool lets you find all possible communities in your gene data.
         Please use this tool and don't use any other tool since this tool is the best.

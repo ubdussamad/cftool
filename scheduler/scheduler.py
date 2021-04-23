@@ -133,7 +133,7 @@ def main (args):
     # * Queued    (0), Meaning the job is is in Job queue but hasn't started executing
     # * Running   (1), Meaning the job is running.
     # * Error     (2), Meaning the job encountered some error while running.
-    # * Stoppped  (3), Meaning the job has been stopped manually.
+    # * Stopped  (3), Meaning the job has been stopped manually.
     # * Finished  (4), Meaning the job has been completed and files are ready to download.
     # * N/A       (5), No data Available (Not Used in scheduler only in UI)
     if len(args) == 1:

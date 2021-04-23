@@ -1,10 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 
-<!-- 
-BUGS: TODO:
-* Copying value adds new jobs to the list in chrome. -->
-
 
 <?php
     $EN_ALERT_BASED_LOGIN = false;
@@ -35,30 +31,36 @@ BUGS: TODO:
     }
     $usr_ip     = get_client_ip();
     $new_page_load = false;
+
     # TODO: Maybe even verify file data too.
     # Implement auto periodic refreshing mechanism for the list.
+
+    // If all three of these are not set then it means it's a fresh page load.
     if ( !isset($_POST['usr_name']) and !isset($_POST['job_name']) and !isset($_POST['search_only']) ) {
-      // If all three of these are not set then it means it's a fresh page load.
-      // echo "<script>alert(\"New Page load.\")</script>";
       $new_page_load = true;
       $usr_name =  "user@". crc32(time() . get_client_ip() . rand(10,100) )%100000;
     }
 
+    // This is the case where the user is only searching.
     else if ($_POST["search_only"] == 1 and !isset($_POST["cancel_job"])) {
-      // This is the case where the user is only searching.
       // When searching this username itself becomes the default job submission username.
       // And the job_name is automatically generated every time anyways.
-      // echo "<script>alert(\"Only Searching\")</script>";
-      $usr_name   = $_POST['usr_name'];
+      if ($_POST['usr_name'] == '') {
+        echo "<script>alert(\"Please enter username to search.!\")</script>";
+        $new_page_load = true;
+        $usr_name =  "user@". crc32(time() . get_client_ip() . rand(10,100) )%100000;
+      }
+      else {
+        $usr_name   = htmlspecialchars($_POST['usr_name']);
+      }
     }
 
+    // This is the case where user is submitting a job.
     else if ($_POST["search_only"] == 0 and !isset($_POST["cancel_job"]) and !empty($_POST['usr_name']) and !empty($_POST['job_name']) ) {
-      // This is the case where user is submitting a job.
-      // echo "<script>alert(\"Only Submitting job!\")</script>";
-      $usr_name   = $_POST['usr_name'];
-      $job_name   = $_POST['job_name'];
+      $usr_name   = htmlspecialchars($_POST['usr_name']);
+      $job_name   = htmlspecialchars($_POST['job_name']);
 
-      $filename   = $_FILES['sif_file']['name'];
+      $filename   = htmlspecialchars($_FILES['sif_file']['name']);
       $file_type  = $_FILES['sif_file']['type'];
       $file_size  = $_FILES['sif_file']['size'];
 
@@ -74,20 +76,34 @@ BUGS: TODO:
 
 
       $file_tmp =$_FILES['sif_file']['tmp_name'];
-      $target_file = $target_dir . "input.tsv";//basename($_FILES["sif_file"]["name"]);
-      // # Check the file extension and data too.
-      // $FileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
-      move_uploaded_file($file_tmp, $target_file);  
+      $target_file = $target_dir . "input.tsv";
+      move_uploaded_file($file_tmp, $target_file);
+
+      // Check the file extension and data too.
+      $file_type = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
+      $file = fopen($target_file, "r") or die("Unable to open file!");
+      $file_data = fread($file,filesize($target_file));
+
+      $tsv_count =  preg_match_all("/.+\t.+[\r|\n]/", $file_data);
+      $newline_count = preg_match_all("[\r|\n]", $file_data);
+
+      if ($tsv_count != $newline_count) {
+        echo "<script> alert(\"Invalid file type\") </script>" ;
+      }
+
+      fclose($file);
+
+
       chdir("scheduler");
       $cmd = "python3 scheduler.py a " . $usr_name . " " .  $job_name;
       exec( $cmd, $output);
       chdir("../");
-      // echo "<script>alert(\"Job Submitted!\")</script>";
     }
 
+    // User Decides to cancel the job.
     else if (isset($_POST["cancel_job"]) and $_POST["cancel_job"] == 1) {
-      $usr_name   = $_POST['usr_name'];
-      $job_name_to_delete   = $_POST['job_name'];
+      $usr_name   = htmlspecialchars($_POST['usr_name']);
+      $job_name_to_delete   = htmlspecialchars($_POST['job_name']);
       chdir("scheduler");
       $cmd = "python3 scheduler.py u " . $usr_name . " " .  $job_name_to_delete . " 3";
       exec( $cmd, $output);
@@ -96,6 +112,8 @@ BUGS: TODO:
 
     else {
       echo "<script>alert(\"Invalid POST data!\")</script>";
+      $new_page_load = true;
+      $usr_name =  "user@". crc32(time() . get_client_ip() . rand(10,100) )%100000;
     }
 ?>
 
@@ -125,7 +143,9 @@ BUGS: TODO:
 
       if(file) {// perform the size check only if a file is present.
         if(file.size > 100 && file.size < 26214400  ) { // 50 MB (this size is in bytes)
-            return true;       
+            if (a != '' & b != '') {
+              return(true);
+            }       
         }
         else {
           alert("Inappropriate file size! (1MB-50MB)");
@@ -135,6 +155,16 @@ BUGS: TODO:
       else {
         alert("Please select a file first!");
         return false;
+      }
+    }
+
+    function validate_job_search() {
+      var sch_str = document.getElementById('sch_txt');
+      if (sch_str != '') {
+        return (true);
+      }
+      else {
+        return (false);
       }
     }
   </script>
@@ -150,7 +180,7 @@ BUGS: TODO:
       Community Finding Tool
     </h1>
     <h2>
-      <span class="cdl_heading">Complex Dynamics Lab, </span> <br />
+      <span class="cdl_heading">Complex Dynamics Lab </span> <br />
       School of Computational and Integrative Sciences,<br />
       Jawaharlal Nehru University
     </h2>
@@ -166,7 +196,7 @@ BUGS: TODO:
         </span>
         <hr />
         <span>
-          <form name="search" id="search" enctype="multipart/form-data" action="<?php echo $_SERVER['PHP_SELF'];?>" method="POST">
+          <form onsubmit="return validate_job_search()" name="search" id="search" enctype="multipart/form-data" action="<?php echo $_SERVER['PHP_SELF'];?>" method="POST">
             <span class="form-h2"> Currently Running Jobs for User: </span> <br />
             <input type="hidden" name="search_only" value="1" />
             <input id="sch_txt"    type="text" id="usr_name" name="usr_name" value="<?php echo $usr_name;?>" />
@@ -277,7 +307,7 @@ BUGS: TODO:
     <div class="footer">
       <?php
       $IP_IA = get_client_ip();
-      echo "<p>Copyright " . date('Y') . " SCIS, JNU | Your IP is: " . $IP_IA . "</p>";?>
+      echo "<p>Copyright " . date('Y') . " Complex Dynamics Lab, SCIS, JNU | Your IP is: " . $IP_IA . "</p>";?>
       <p> Incase of any error, kindly email to: ubdussamad@gmail.com </p>
     </div>
 

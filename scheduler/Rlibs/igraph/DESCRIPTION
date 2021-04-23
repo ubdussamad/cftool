@@ -37,4 +37,4 @@ NeedsCompilation: yes
 Packaged: 2020-10-06 10:36:22 UTC; gaborcsardi
 Repository: CRAN
 Date/Publication: 2020-10-06 12:40:05 UTC
-Built: R 4.0.4; x86_64-pc-linux-gnu; 2021-03-19 06:43:11 UTC; unix
+Built: R 4.0.2; x86_64-pc-linux-gnu; 2021-04-18 09:34:07 UTC; unix

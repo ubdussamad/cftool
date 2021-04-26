@@ -29,8 +29,26 @@
           $ipaddress = 'UNKNOWN';
       return $ipaddress;
     }
+
+    function badRequestHandler() {
+      header("HTTP/1.1 400 Bad Request");
+      echo "<h1>Bad input, Please go back!</h1>";
+      echo "<hr><footer> Apache/2.4.46 (Ubuntu) </footer>";
+      die();
+    }
+
     $usr_ip     = get_client_ip();
     $new_page_load = false;
+
+    # Server side post data verification block.
+    $injection_vectors = array('job_name', 'usr_name');
+    for ($x = 0; $x < count($injection_vectors) ; $x++) {
+      if (isset( $_POST[ $injection_vectors[$x] ] )){
+        if (preg_match( '/[;&|`^]/' , $_POST[ $injection_vectors[$x]])) {
+          badRequestHandler();
+        }
+      }
+    }
 
     # TODO: Maybe even verify file data too.
     # Implement auto periodic refreshing mechanism for the list.
@@ -51,16 +69,16 @@
         $usr_name =  "user@". crc32(time() . get_client_ip() . rand(10,100) )%100000;
       }
       else {
-        $usr_name   = htmlspecialchars($_POST['usr_name']);
+        $usr_name   = htmlspecialchars($_POST['usr_name']); // Check this var for Injection
       }
     }
 
     // This is the case where user is submitting a job.
     else if ($_POST["search_only"] == 0 and !isset($_POST["cancel_job"]) and !empty($_POST['usr_name']) and !empty($_POST['job_name']) ) {
-      $usr_name   = htmlspecialchars($_POST['usr_name']);
-      $job_name   = htmlspecialchars($_POST['job_name']);
+      $usr_name   = htmlspecialchars($_POST['usr_name']); // Check this var for Injection
+      $job_name   = htmlspecialchars($_POST['job_name']); // Check this var for Injection
 
-      $filename   = htmlspecialchars($_FILES['sif_file']['name']);
+      $filename   = htmlspecialchars($_FILES['sif_file']['name']); // Check this var for Injection (Even this, you never know)
       $file_type  = $_FILES['sif_file']['type'];
       $file_size  = $_FILES['sif_file']['size'];
 
@@ -81,7 +99,8 @@
 
       // Check the file extension and data too.
       $file_type = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
-      $file = fopen($target_file, "r") or die("Unable to open file!");
+      $file = fopen($target_file, "r") or badRequestHandler();
+
       $file_data = fread($file,filesize($target_file));
 
       $tsv_count =  preg_match_all("/.+\t.+[\r|\n]/", $file_data);
@@ -95,17 +114,17 @@
 
 
       chdir("scheduler");
-      $cmd = "python3 scheduler.py a " . $usr_name . " " .  $job_name;
+      $cmd = "python3 scheduler.py a \"" . $usr_name . "\" \"" .  $job_name . "\"";
       exec( $cmd, $output);
       chdir("../");
     }
 
     // User Decides to cancel the job.
     else if (isset($_POST["cancel_job"]) and $_POST["cancel_job"] == 1) {
-      $usr_name   = htmlspecialchars($_POST['usr_name']);
-      $job_name_to_delete   = htmlspecialchars($_POST['job_name']);
+      $usr_name   = htmlspecialchars($_POST['usr_name']); // Check this var for Injection
+      $job_name_to_delete   = htmlspecialchars($_POST['job_name']); // Check this var for Injection
       chdir("scheduler");
-      $cmd = "python3 scheduler.py u " . $usr_name . " " .  $job_name_to_delete . " 3";
+      $cmd = "python3 scheduler.py u \"" . $usr_name . "\" \"" .  $job_name_to_delete . "\" 3";
       exec( $cmd, $output);
       chdir("../");
     }
@@ -139,6 +158,18 @@
     function validate_job_submission() {
       var a = document.getElementById('job_name');
       var b = document.getElementById('usr_name');
+      
+      if ( a.value == '' || b.value == '' ) {
+        alert("Empty Input fields.");
+        return(false);
+      }
+
+      const regex = new RegExp('[;&|`^]');
+      if ( regex.test( a.value ) ||  regex.test( b.value ) ) {
+        alert("Only allowed characters are: [A-Z],[a-z],@,_ \n Please edit the input.");
+        return(false);
+      }
+
       var file = document.getElementById('file_name').files[0];
 
       if(file) {// perform the size check only if a file is present.
@@ -160,11 +191,20 @@
 
     function validate_job_search() {
       var sch_str = document.getElementById('sch_txt');
-      if (sch_str != '') {
+      const regex = new RegExp('[;&|`^]');
+
+      if ( regex.test( sch_str.value ) ) {
+        alert("Invalid characters in input. \nOnly allowed characters are: [A-Z],[a-z],@,_ \n Please edit the input.");
+        return(false);
+      }
+
+      if (sch_str.value != '') {
         return (true);
       }
+
       else {
-        return (false);
+        alert("Empty Search query.");
+        return(false);
       }
     }
   </script>
@@ -216,7 +256,7 @@
         <?php
         $output = null;
         chdir("scheduler");
-        $cmd = "python3 scheduler.py l " . $usr_name;
+        $cmd = "python3 scheduler.py l \"" . $usr_name . "\"";
         exec( $cmd, $output);
         $job_states = array("Queued","Running","Error","Stopped","Finished","N/A");
         for ( $i=0; $i < count($output); $i++ ) {
@@ -225,7 +265,8 @@
           for ($j=0; $j < count($row)+2; $j++ ) {
             $link = "<a target=\"blank\" rel=\"noopener noreferrer\" href=\"../upload/output_" . crc32( $row[1] . "salt" . $row[2] ) . "/\">Download </a>";
             
-            $cancel_job = "<form method=\"POST\"> <input type=\"hidden\" value=\"1\" name=\"cancel_job\"/>" 
+            $cancel_job = "<form method=\"POST\"> <input type=\"hidden\" value=\"1\" name=\"cancel_job\"/>"
+            ."<input type=\"hidden\" name=\"search_only\" value=\"0\" />"
             ."<input type=\"hidden\" name=\"usr_name\" value=\"" . $row[1] ."\"/>".
             "<input type=\"hidden\" name=\"job_name\" value=\"" . $row[2] ."\"/>".
             "<input type=\"submit\" value=\"Cancel\"> </form>";
@@ -249,7 +290,7 @@
           <input type="hidden" name="search_only" value="0" />
           <span class="form-h2"> Enter Job name or leave it default: </span> <br>
           
-          <input id="job_name" type="text" name="job_name"
+          <input id="job_name" placeholder="Enter the Job's name here" type="text" name="job_name"
             value="<?php $job_id = 'Job@' . date('d-m-yh:i:s');echo $job_id;?>" />
 
           <br /><br />

@@ -8,6 +8,9 @@ import os
 import zlib
 
 
+# sys.stdout = open('sch.txt', 'w')
+sys.stderr = open('scheduler_err.log' , 'a') # Divert stderr to a dedicated log file.
+
 def script_directory(f):
     return os.path.join( os.path.dirname(sys.argv[0]) , f)
 
@@ -148,21 +151,16 @@ def main (args):
         if len(args) == 3:
             # Search for name & IP addr , if exists then find running jobs.
             # Ensure safety by parsing the args using regex to check for injection.
-            # q = %(args[2])
-            # sch_log(q)
             cursor.execute("SELECT * from jobs WHERE usr_name=? ",(args[2],))
             r = cursor.fetchall()
             sch_log(r)
             if r == []:
                 print("N/A,N/A,N/A, 5,")
                 return
-            # r = str(r)[1:-1]
-            # print( "|".join( r.split("),")).strip('(') )
             for i in r:
                 for j in i:
                     print (j,end=",")
                 print('',end='\n')
-            # print("",end='\n')
 
     # Append a new job
     elif cmd == 'a': # {$FILENAME (0), $CMD (1), $USR_NAME (2), $JOB_ID (3) }
@@ -215,7 +213,7 @@ def main (args):
     elif cmd == 'u': # {$FILENAME (0), $CMD (1), $USR_NAME (2), $JOB_ID (3), $STATUS (4) }
 
         # Check if the job exists or not
-        # Select the job and update it's status according to the recieved command line arg
+        # Select the job and update it's status according to the received command line arg
         
         sch_log("Updating ... \n %s"%', '.join(args))
         if len(args) != 5:
@@ -245,6 +243,5 @@ def main (args):
 
 
 if __name__ == "__main__":
-    # print("V6-SCHED")
     refresh()
     main(sys.argv)

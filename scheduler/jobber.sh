@@ -4,9 +4,10 @@
 # $3 -> CRC32
 echo "Moving to output DIR"
 cd ../upload/output_$3/
+
 # echo "Moved to output DIR"
 # echo "Running the script."
-/var/www/html/scheduler/CF_1.sh input.tsv >out 2>&1
+# /var/www/html/scheduler/CF_1.sh input.tsv >out 2>&1
 echo "Ran the script."
 
 # echo "Moving Back to sceheduler."

@@ -19,7 +19,7 @@ EOF
 
 
 R CMD BATCH out.R
-rm out.R out.Rout
+# rm out.R out.Rout
 
 
 for k in `ls *.txt` ; do

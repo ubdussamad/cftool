@@ -44,6 +44,13 @@
     $injection_vectors = array('job_name', 'usr_name');
     for ($x = 0; $x < count($injection_vectors) ; $x++) {
       if (isset( $_POST[ $injection_vectors[$x] ] )){
+
+        // This prevents user from inserting other types of data to confuse the server
+        if (gettype($_POST[ $injection_vectors[$x]]) != "string") {
+          badRequestHandler();
+        }
+
+        // Check for illegal chars on server side.
         if (preg_match( '/[;&|`^]/' , $_POST[ $injection_vectors[$x]])) {
           badRequestHandler();
         }

@@ -1,9 +1,8 @@
+// sanity.js - Checks for invalid form entries on client side.
+// Author: ubdussamad <ubdussamad at jeemail>
+// License: MIT
 
-// TODO:
-// Min file size and max file size validation is done here
-// Also, file type check could be done here.
-// Don't allow job submission if there are spaces in the username or job id.
-// Don't abuse this, the server itself wont accept a larger or smaller file size anyways.
+
 function validate_job_submission() {
   var a = document.getElementById('job_name');
   var b = document.getElementById('usr_name');

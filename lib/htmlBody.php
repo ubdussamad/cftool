@@ -1,6 +1,4 @@
-
 <body>
-
 <div class="header_section">
   <h1 class="title_header">
     Community Finding Tool
@@ -41,9 +39,11 @@
         </tr>
       <?php
       $output = null;
+
       chdir("scheduler");
       $cmd = "python3 scheduler.py l \"" . $usr_name . "\"";
       exec( $cmd, $output);
+
       $job_states = array("Queued","Running","Error","Stopped","Finished","N/A");
       for ( $i=0; $i < count($output); $i++ ) {
         echo "<tr>";
@@ -84,20 +84,16 @@
         <span style="display:flex;flex-direction:row;">
         
         <input id="usr_name" type="text" value="<?php echo $usr_name;?>" title="Note your user name." name="usr_name" placeholder="Enter your name" />
-
-        <!-- <button title="Copy User Name to Clipboard." class="cpy-btn" onclick="copy_to_clipboard()">📄</button> -->
         </span>
 
         <span style="font-size:12px;"><i> (Note this for future Reference.) </i></span>
         <br /><br />
 
-        <!-- <input type="hidden" name="MAX_FILE_SIZE" value="30000" /> -->
         <span class="form-h2"> Select File: <i> (.tsv) </i> </span> <br />
         <input id="file_name" type="file" name="sif_file" placeholder="<?php $date = date('d-m-y h:i:s');echo $date; ?>" />
 
         <br />
         <br />
-        <!-- Don't let the user submit without proper validation. -->
         <input class="submit_button" type="submit" name="Submit" value="Submit" />
         <br />
       </form>
@@ -105,10 +101,6 @@
   </div>
 
   <div class="intro">
-  <!-- <div class="scis_logo_outer">
-    <span class="scis_logo_inner_1"> COMPLEX DYNAMICS LAB </span> <br/>
-    <span class="scis_logo_inner_2"> SCIS, JAWAHARLAL NEHRU UNIVERSITY </span> <br/>
-  </div> -->
     <p>
       This tool lets you find all possible communities in your gene data.
       Please use this tool and don't use any other tool since this tool is the best.
@@ -127,11 +119,6 @@
       We also don't use any cookies whatsoever.
     </p>
   </div>
-
-
-  <br />
-
-
+  <br/>
 </div>
-
 </body>

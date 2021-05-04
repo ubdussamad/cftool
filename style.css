@@ -92,7 +92,7 @@ button {
 	margin-bottom: 10px;
 	font-size: 127%;
 	font-weight: bold;
-	font-family: courier;
+	font-family: 'Zilla Slab', serif;
 }
 
 .footer {
@@ -198,10 +198,6 @@ input.sch_submit {
 
 .scis_logo_inner_1 {
 	color:rgba(27, 55, 64, 1);
-
-}
-
-.scis_logo_inner_1 {
 
 }
 

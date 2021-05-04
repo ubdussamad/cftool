@@ -16,8 +16,5 @@ function get_client_ip() {
       else
           $ipaddress = 'UNKNOWN';
       return $ipaddress;
-    }
-
-
-
+}
 ?>

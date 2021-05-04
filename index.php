@@ -1,7 +1,7 @@
 <?php
     # Debug Opts
     $EN_DEBUG_ALERTS  = false;
-    $EN_SANITY_JS     = false;
+    $EN_SANITY_JS     = true;
     $EN_AUTO_SORT_JS  = true;
     $EN_EXTERN_FONTS  = true;
     $EN_INTERNAL_STYLE= true;
@@ -14,7 +14,6 @@
     // TODO:
     // Implement auto periodic refreshing mechanism for the list.
 
-    $usr_ip         = get_client_ip();
     $new_page_load  = false;
 
     # Server side post data verification block.
@@ -33,7 +32,6 @@
         }
       }
     }
-
 
     
     # Request Handler Logic [TODO: Needs Optimization]

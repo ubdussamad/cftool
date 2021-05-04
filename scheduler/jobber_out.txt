@@ -1,4 +1,3 @@
 Moving to output DIR
 Ran the script.
-Missing/Too Many Args: Try: ./schedular [$CMD] [$JOB_ID]
-Job@01-05-2109:39:05 &lt;b&gt; glassy &lt;/b&gt; is Done
+Job@04-05-2104:28:08 is Done

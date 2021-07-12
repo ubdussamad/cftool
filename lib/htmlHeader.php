@@ -14,20 +14,20 @@
 
     <?php
     if ($EN_SANITY_JS){ 
-        echo "<script type='text/javascript' src='sanity.js'></script>";
+        echo "\n<script type='text/javascript' src='sanity.js'></script>";
     }
 
     if ($EN_AUTO_SORT_JS) {
-        echo "<script type='text/javascript' src='https://www.kryogenix.org/code/browser/sorttable/sorttable.js'></script>";
+        echo "\n<script type='text/javascript' src='https://www.kryogenix.org/code/browser/sorttable/sorttable.js'></script>";
     }
     
     if ($EN_EXTERN_FONTS) {
-        echo '<link rel="preconnect" href="https://fonts.gstatic.com">
-            <link href="https://fonts.googleapis.com/css2?family=Zilla+Slab&display=swap" rel="stylesheet">';
+        echo "\n" . '<link rel="preconnect" href="https://fonts.gstatic.com">' . "\n";
+        echo '<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab&display=swap" rel="stylesheet">' . "\n";
     }
 
     if ($EN_INTERNAL_STYLE) {
-        echo "<link rel='stylesheet' href='style.css'>";
+        echo "\n<link rel='stylesheet' href='style.css'>";
     }
     ?>
 

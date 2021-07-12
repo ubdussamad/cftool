@@ -1,8 +1,17 @@
+:root {
+	--blue: #1e90ff;
+	--white: #ffffff;
+	--form-bg: #ffffff;/*rgb(238, 237, 205);*/
+	--banner-base: #567880;
+  }
+
 body {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 }
+
+
 
 .header_section {
 	border-radius: 5px;
@@ -61,7 +70,7 @@ h2 {
 	border: 1px solid rgb(100, 100, 100);
 	box-shadow: 2px 2px 3px inset rgba(156, 156, 156, 0.1);
 	border-radius: 4px;
-	background-color: rgb(238, 237, 205);
+	background-color: var(--form-bg);
 	align-content: center;
 	width: 40%;
 }
@@ -81,7 +90,7 @@ button {
 	border: 1px solid #848484;
 	padding: 6px;
 	border-radius: 7px;
-	background: #567880;
+	background: var(--banner-base);
 }
 
 .form-heading {
@@ -109,10 +118,11 @@ button {
 	margin-top: 2%;
 	margin-top: 0%;
 	border: 1px solid rgb(100, 100, 100);
-	box-shadow: 2px 2px 3px inset rgba(156, 156, 156, 0.1);
+	box-shadow: 1px 1px 13px inset rgba(156, 156, 156, 0.1);
 	border-radius: 4px;
-	background-color: rgb(238, 237, 205);
+	background-color: var(--form-bg);
 	align-content: center;
+	border-radius: 8px 6px 16px 0px;
 }
 
 .job_list_table {
@@ -146,7 +156,7 @@ tr:nth-child(2n-1) {
 }
 
 tr.th {
-	background-color: #567880;
+	background-color: var(--banner-base);
 	color: white;
 	border: 2px solid white;
 }
@@ -158,7 +168,7 @@ th {
 }
 
 .cpy-btn {
-	background-color: #567880;
+	background-color: var(--banner-base);
 	border-top-right-radius: 8px;
 	border-bottom-right-radius: 8px;
 	border: 0px;
@@ -179,7 +189,7 @@ input.sch_submit {
 	box-sizing: border-box;
 	padding: 0.85%;
 	border: 1px solid #c4c4c4;
-	background-color: #567880;
+	background-color: var(--banner-base);
 	color: #fff;
 }
 

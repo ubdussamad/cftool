@@ -1,4 +1,5 @@
 * install apache 2
+sudo apt-get install apache2
 
 * install install php7 bindings for apache 2
 sudo apt-get install php libapache2-mod-php php-mcrypt php-mysql

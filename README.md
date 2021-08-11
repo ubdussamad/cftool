@@ -5,3 +5,5 @@ It's built on LAMP stack and on completion will be hosted on Dr. Brojen Singh's 
 A screenshot of the web interface is given below for refrence:
 
 ![Screenshot of the Community Finding Tools Web Interface](/media/Screenshot.png)
+
+Designed and Developed by Mohammad Samad. <ubdussamad [at] [mail from google] >

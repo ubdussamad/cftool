@@ -4,3 +4,4 @@ scheduler/.RData
 upload/*
 scheduler/jobber_out.txt
 scheduler/jobs.db
+scheduler/logs/*

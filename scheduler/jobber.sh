@@ -4,11 +4,16 @@
 # $3 -> CRC32
 echo "Moving to output DIR"
 cd ../upload/output_$3/
+# cd /var/www/html/scheduler/Community-Finding-Tools/src/
 
 # echo "Moved to output DIR"
 # echo "Running the script."
-# /var/www/html/scheduler/CF_1.sh input.tsv >out 2>&1
+/var/www/html/scheduler/Community-Finding-Tools/src/main.sh $(pwd)/input.tsv >out 2>&1
 echo "Ran the script."
+
+mv /var/www/html/scheduler/Community-Finding-Tools/src/Samples ./
+zip output.zip Samples/*
+rm -rf Samples
 
 # echo "Moving Back to sceheduler."
 cd ./../../scheduler/

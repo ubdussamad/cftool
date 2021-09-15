@@ -1,8 +1,8 @@
 <?php
     # Debug Opts
     $EN_DEBUG_ALERTS  = false;
-    $EN_SANITY_JS     = false;
-    $EN_AUTO_SORT_JS  = false;
+    $EN_SANITY_JS     = true;
+    $EN_AUTO_SORT_JS  = true;
     $EN_EXTERN_FONTS  = true;
     $EN_INTERNAL_STYLE= true;
     $EN_API_DBG       = false;

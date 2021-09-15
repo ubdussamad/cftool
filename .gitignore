@@ -1,3 +1,6 @@
 scheduler/Rlibs
 scheduler/Samples/
 scheduler/.RData
+upload/*
+scheduler/jobber_out.txt
+scheduler/jobs.db

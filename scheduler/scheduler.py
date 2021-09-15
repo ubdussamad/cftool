@@ -8,8 +8,7 @@ import os
 import zlib
 
 
-# sys.stdout = open('sch.txt', 'w')
-sys.stderr = open('scheduler_err.log' , 'a') # Divert stderr to a dedicated log file.
+sys.stderr = open('logs/scheduler_err.log' , 'a') # Divert stderr to a dedicated log file.
 
 def script_directory(f):
     return os.path.join( os.path.dirname(sys.argv[0]) , f)

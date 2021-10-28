@@ -7,7 +7,6 @@
     $EN_INTERNAL_STYLE= true;
     $EN_API_DBG       = false;
 
-
     require_once $_SERVER['PHP_ROOT'].'lib/debug.php';
     require_once $_SERVER['PHP_ROOT'].'lib/netUtil.php';
     require_once $_SERVER['PHP_ROOT'].'lib/badRequest.php';
@@ -16,7 +15,6 @@
     // Implement auto periodic refreshing mechanism for the list.
 
     $new_page_load  = false;
-
 
     # Server side post data verification block.
     $injection_vectors = array('job_name', 'usr_name');
@@ -34,7 +32,6 @@
         }
       }
     }
-
     
     # Request Handler Logic [TODO: Needs Optimization]
 

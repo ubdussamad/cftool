@@ -1,5 +1,5 @@
 :root {
-	--blue: #1e90ff;
+	--blue: #1f6f82 /* #1e90ff; */
 	--white: #ffffff;
 	--form-bg: #ffffff;/*rgb(238, 237, 205);*/
 	--banner-base: #567880;
@@ -72,7 +72,21 @@ h2 {
 	border-radius: 4px;
 	background-color: var(--form-bg);
 	align-content: center;
-	width: 40%;
+	width: 28%;
+}
+
+.job_list_div {
+	padding: 15px;
+	margin-bottom: 2%;
+	margin-top: 2%;
+	margin-top: 0%;
+	border: 1px solid rgb(100, 100, 100);
+	box-shadow: 1px 1px 13px inset rgba(156, 156, 156, 0.1);
+	border-radius: 4px;
+	background-color: var(--form-bg);
+	align-content: center;
+	border-radius: 8px 6px 16px 0px;
+	width:72%;
 }
 
 button {
@@ -94,7 +108,7 @@ button {
 }
 
 .form-heading {
-	color: #213d73;
+	color: #43595e; /*#213d73;*/
 	padding-bottom: 0;
 	text-align: center;
 	align-self: center;
@@ -112,18 +126,6 @@ button {
 	font-family: "courier";
 }
 
-.job_list_div {
-	padding: 15px;
-	margin-bottom: 2%;
-	margin-top: 2%;
-	margin-top: 0%;
-	border: 1px solid rgb(100, 100, 100);
-	box-shadow: 1px 1px 13px inset rgba(156, 156, 156, 0.1);
-	border-radius: 4px;
-	background-color: var(--form-bg);
-	align-content: center;
-	border-radius: 8px 6px 16px 0px;
-}
 
 .job_list_table {
 	border-radius: 4px;

@@ -24,7 +24,8 @@
           <span class="form-h2"> Currently Running Jobs for User: </span> <br />
           <input type="hidden" name="search_only" value="1" />
           <input id="sch_txt"    type="text" id="usr_name" name="usr_name" value="<?php echo $usr_name;?>" />
-          <input class="sch_submit" type="submit" value="Search" name="Search" />
+          <input class="sch_submit" type="submit" value="Search" name="Search" title="Search for jobs on this user." />
+          <input style="margin-left: 2px;border-radius:4px;" class="sch_submit" type="submit" value="↻Refresh" name="↻" title="Refresh the Job status for the current user." />
         </form>
       </span>
       <br />

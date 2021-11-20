@@ -114,6 +114,12 @@
 
         <br/>
         <br/>
+        <span class="form-h2" title="Set the |V|min for leaf nodes. The minimum number of nodes to stop at.">
+          Set the |V|<sub>min</sub> for leaf nodes.
+        </span>
+        <input type="text" placeholder="3" value=3>
+        <br/>
+        <br/>
         <span class="form-h2" title="Select an edgelist file. The file should be a Tab-separated value edge-list. https://en.wikipedia.org/wiki/Tab-separated_values">
           Select Edgelist File: <i> (.tsv) </i>
         </span>

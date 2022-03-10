@@ -1,0 +1,985 @@
+{
+    "name": "root",
+    "children": [
+        {
+            "name": "6",
+            "key_regs": [
+                "CDK2",
+                "BRCA1"
+            ],
+            "children": [
+                {
+                    "name": "3",
+                    "key_regs": [
+                        "CDK2"
+                    ]
+                },
+                {
+                    "name": "2",
+                    "key_regs": [
+                        "BRCA1"
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "2",
+            "key_regs": [
+                "CBL",
+                "PTK2",
+                "STAT1",
+                "PRKCD",
+                "JAK2",
+                "LYN",
+                "PLCG1",
+                "MAPK3",
+                "PTPN6",
+                "LCK",
+                "ABL1",
+                "PTPN11",
+                "STAT3",
+                "SHC1",
+                "PIK3R1",
+                "FYN",
+                "MAPK1",
+                "EGFR",
+                "SRC",
+                "GRB2"
+            ],
+            "children": [
+                {
+                    "name": "2",
+                    "key_regs": [
+                        "CBL",
+                        "LYN",
+                        "PLCG1",
+                        "LCK",
+                        "SHC1",
+                        "FYN",
+                        "GRB2"
+                    ],
+                    "children": [
+                        {
+                            "name": "4",
+                            "key_regs": [
+                                "CBL",
+                                "LCK"
+                            ],
+                            "children": [
+                                {
+                                    "name": "1",
+                                    "key_regs": [
+                                        "CBL"
+                                    ],
+                                    "children": [
+                                        {
+                                            "name": "1",
+                                            "key_regs": [
+                                                "CBL"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "2",
+                                    "key_regs": [
+                                        "LCK"
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "1",
+                            "key_regs": [
+                                "LYN",
+                                "SHC1",
+                                "FYN"
+                            ],
+                            "children": [
+                                {
+                                    "name": "5",
+                                    "key_regs": [
+                                        "LYN"
+                                    ],
+                                    "children": [
+                                        {
+                                            "name": "1",
+                                            "key_regs": [
+                                                "LYN"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "2",
+                                    "key_regs": [
+                                        "SHC1"
+                                    ]
+                                },
+                                {
+                                    "name": "4",
+                                    "key_regs": [
+                                        "FYN"
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "2",
+                            "key_regs": [
+                                "PLCG1"
+                            ],
+                            "children": [
+                                {
+                                    "name": "2",
+                                    "key_regs": [
+                                        "PLCG1"
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "3",
+                            "key_regs": [
+                                "GRB2"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "6",
+                    "key_regs": [
+                        "PTK2",
+                        "ABL1"
+                    ],
+                    "children": [
+                        {
+                            "name": "5",
+                            "key_regs": [
+                                "PTK2"
+                            ],
+                            "children": [
+                                {
+                                    "name": "2",
+                                    "key_regs": [
+                                        "PTK2"
+                                    ],
+                                    "children": [
+                                        {
+                                            "name": "1",
+                                            "key_regs": [
+                                                "PTK2"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "3",
+                            "key_regs": [
+                                "ABL1"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "3",
+                    "key_regs": [
+                        "STAT1",
+                        "JAK2",
+                        "STAT3",
+                        "PIK3R1"
+                    ],
+                    "children": [
+                        {
+                            "name": "2",
+                            "key_regs": [
+                                "STAT1",
+                                "STAT3"
+                            ],
+                            "children": [
+                                {
+                                    "name": "2",
+                                    "key_regs": [
+                                        "STAT3"
+                                    ],
+                                    "children": [
+                                        {
+                                            "name": "1",
+                                            "key_regs": [
+                                                "STAT3"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "5",
+                            "key_regs": [
+                                "JAK2"
+                            ],
+                            "children": [
+                                {
+                                    "name": "2",
+                                    "key_regs": [
+                                        "JAK2"
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "1",
+                            "key_regs": [
+                                "PIK3R1"
+                            ],
+                            "children": [
+                                {
+                                    "name": "1",
+                                    "key_regs": [
+                                        "PIK3R1"
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "4",
+                    "key_regs": [
+                        "PRKCD",
+                        "MAPK3",
+                        "MAPK1",
+                        "SRC"
+                    ],
+                    "children": [
+                        {
+                            "name": "5",
+                            "key_regs": [
+                                "PRKCD"
+                            ],
+                            "children": [
+                                {
+                                    "name": "1",
+                                    "key_regs": [
+                                        "PRKCD"
+                                    ],
+                                    "children": [
+                                        {
+                                            "name": "1",
+                                            "key_regs": [
+                                                "PRKCD"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "1",
+                            "key_regs": [
+                                "MAPK3",
+                                "MAPK1"
+                            ],
+                            "children": [
+                                {
+                                    "name": "3",
+                                    "key_regs": [
+                                        "MAPK3",
+                                        "MAPK1"
+                                    ],
+                                    "children": [
+                                        {
+                                            "name": "1",
+                                            "key_regs": [
+                                                "MAPK3",
+                                                "MAPK1"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "2",
+                            "key_regs": [
+                                "SRC"
+                            ],
+                            "children": [
+                                {
+                                    "name": "3",
+                                    "key_regs": [
+                                        "SRC"
+                                    ],
+                                    "children": [
+                                        {
+                                            "name": "2",
+                                            "key_regs": [
+                                                "SRC"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "7",
+                    "key_regs": [
+                        "PTPN6",
+                        "PTPN11"
+                    ]
+                },
+                {
+                    "name": "5",
+                    "key_regs": [
+                        "EGFR"
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "10",
+            "key_regs": [
+                "UBE2I",
+                "NR3C1",
+                "HSP90AA1",
+                "RELA",
+                "HDAC1",
+                "JUN",
+                "RB1",
+                "CSNK2A1",
+                "AR",
+                "CREBBP",
+                "EP300",
+                "ESR1",
+                "TP53"
+            ],
+            "children": [
+                {
+                    "name": "6",
+                    "key_regs": [
+                        "UBE2I",
+                        "TP53"
+                    ],
+                    "children": [
+                        {
+                            "name": "3",
+                            "key_regs": [
+                                "UBE2I"
+                            ],
+                            "children": [
+                                {
+                                    "name": "1",
+                                    "key_regs": [
+                                        "UBE2I"
+                                    ],
+                                    "children": [
+                                        {
+                                            "name": "2",
+                                            "key_regs": [
+                                                "UBE2I"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "2",
+                            "key_regs": [
+                                "TP53"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "1",
+                    "key_regs": [
+                        "NR3C1",
+                        "AR",
+                        "ESR1"
+                    ],
+                    "children": [
+                        {
+                            "name": "2",
+                            "key_regs": [
+                                "NR3C1"
+                            ],
+                            "children": [
+                                {
+                                    "name": "1",
+                                    "key_regs": [
+                                        "NR3C1"
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "1",
+                            "key_regs": [
+                                "AR"
+                            ],
+                            "children": [
+                                {
+                                    "name": "1",
+                                    "key_regs": [
+                                        "AR"
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "4",
+                            "key_regs": [
+                                "ESR1"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "2",
+                    "key_regs": [
+                        "HSP90AA1",
+                        "RELA"
+                    ],
+                    "children": [
+                        {
+                            "name": "5",
+                            "key_regs": [
+                                "HSP90AA1"
+                            ]
+                        },
+                        {
+                            "name": "1",
+                            "key_regs": [
+                                "RELA"
+                            ],
+                            "children": [
+                                {
+                                    "name": "1",
+                                    "key_regs": [
+                                        "RELA"
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "8",
+                    "key_regs": [
+                        "HDAC1",
+                        "RB1"
+                    ],
+                    "children": [
+                        {
+                            "name": "2",
+                            "key_regs": [
+                                "HDAC1"
+                            ],
+                            "children": [
+                                {
+                                    "name": "1",
+                                    "key_regs": [
+                                        "HDAC1"
+                                    ],
+                                    "children": [
+                                        {
+                                            "name": "2",
+                                            "key_regs": [
+                                                "HDAC1"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "1",
+                            "key_regs": [
+                                "RB1"
+                            ],
+                            "children": [
+                                {
+                                    "name": "3",
+                                    "key_regs": [
+                                        "RB1"
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "5",
+                    "key_regs": [
+                        "JUN",
+                        "CSNK2A1"
+                    ],
+                    "children": [
+                        {
+                            "name": "3",
+                            "key_regs": [
+                                "JUN"
+                            ],
+                            "children": [
+                                {
+                                    "name": "1",
+                                    "key_regs": [
+                                        "JUN"
+                                    ],
+                                    "children": [
+                                        {
+                                            "name": "1",
+                                            "key_regs": [
+                                                "JUN"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "2",
+                            "key_regs": [
+                                "CSNK2A1"
+                            ],
+                            "children": [
+                                {
+                                    "name": "2",
+                                    "key_regs": [
+                                        "CSNK2A1"
+                                    ],
+                                    "children": [
+                                        {
+                                            "name": "1",
+                                            "key_regs": [
+                                                "CSNK2A1"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "7",
+                    "key_regs": [
+                        "CREBBP",
+                        "EP300"
+                    ],
+                    "children": [
+                        {
+                            "name": "1",
+                            "key_regs": [
+                                "CREBBP",
+                                "EP300"
+                            ],
+                            "children": [
+                                {
+                                    "name": "3",
+                                    "key_regs": [
+                                        "CREBBP",
+                                        "EP300"
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "3",
+            "key_regs": [
+                "SMAD1",
+                "TGFBR1",
+                "SMAD3",
+                "SMAD4",
+                "SMAD2"
+            ],
+            "children": [
+                {
+                    "name": "4",
+                    "key_regs": [
+                        "SMAD1",
+                        "SMAD3",
+                        "SMAD4",
+                        "SMAD2"
+                    ],
+                    "children": [
+                        {
+                            "name": "2",
+                            "key_regs": [
+                                "SMAD1"
+                            ],
+                            "children": [
+                                {
+                                    "name": "2",
+                                    "key_regs": [
+                                        "SMAD1"
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "1",
+                            "key_regs": [
+                                "SMAD3"
+                            ]
+                        },
+                        {
+                            "name": "3",
+                            "key_regs": [
+                                "SMAD2"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "3",
+                    "key_regs": [
+                        "TGFBR1"
+                    ],
+                    "children": [
+                        {
+                            "name": "1",
+                            "key_regs": [
+                                "TGFBR1"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "4",
+            "key_regs": [
+                "YWHAZ",
+                "YWHAB",
+                "RAF1",
+                "AKT1",
+                "YWHAG"
+            ],
+            "children": [
+                {
+                    "name": "2",
+                    "key_regs": [
+                        "YWHAZ",
+                        "YWHAB"
+                    ],
+                    "children": [
+                        {
+                            "name": "2",
+                            "key_regs": [
+                                "YWHAZ"
+                            ],
+                            "children": [
+                                {
+                                    "name": "1",
+                                    "key_regs": [
+                                        "YWHAZ"
+                                    ],
+                                    "children": [
+                                        {
+                                            "name": "1",
+                                            "key_regs": [
+                                                "YWHAZ"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "1",
+                    "key_regs": [
+                        "RAF1"
+                    ],
+                    "children": [
+                        {
+                            "name": "1",
+                            "key_regs": [
+                                "RAF1"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "7",
+                    "key_regs": [
+                        "AKT1"
+                    ]
+                },
+                {
+                    "name": "4",
+                    "key_regs": [
+                        "YWHAG"
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "1",
+            "key_regs": [
+                "PRKACA",
+                "PRKCA",
+                "CTNNB1"
+            ],
+            "children": [
+                {
+                    "name": "11",
+                    "key_regs": [
+                        "PRKACA"
+                    ]
+                },
+                {
+                    "name": "7",
+                    "key_regs": [
+                        "PRKCA"
+                    ],
+                    "children": [
+                        {
+                            "name": "2",
+                            "key_regs": [
+                                "PRKCA"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "4",
+                    "key_regs": [
+                        "CTNNB1"
+                    ],
+                    "children": [
+                        {
+                            "name": "3",
+                            "key_regs": [
+                                "CTNNB1"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "9",
+            "key_regs": [
+                "TRAF2"
+            ],
+            "children": [
+                {
+                    "name": "3",
+                    "key_regs": [
+                        "TRAF2"
+                    ],
+                    "children": [
+                        {
+                            "name": "3",
+                            "key_regs": [
+                                "TRAF2"
+                            ],
+                            "children": [
+                                {
+                                    "name": "1",
+                                    "key_regs": [
+                                        "TRAF2"
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "5",
+            "key_regs": [
+                "CASP3"
+            ],
+            "children": [
+                {
+                    "name": "3",
+                    "key_regs": [
+                        "CASP3"
+                    ],
+                    "children": [
+                        {
+                            "name": "3",
+                            "key_regs": [
+                                "CASP3"
+                            ],
+                            "children": [
+                                {
+                                    "name": "1",
+                                    "key_regs": [
+                                        "CASP3"
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "key_regs": [
+        {
+            "CDK2": "0"
+        },
+        {
+            "CBL": "0"
+        },
+        {
+            "PTK2": "0"
+        },
+        {
+            "UBE2I": "0"
+        },
+        {
+            "STAT1": "0"
+        },
+        {
+            "PRKCD": "0"
+        },
+        {
+            "SMAD1": "0"
+        },
+        {
+            "YWHAZ": "0"
+        },
+        {
+            "PRKACA": "0"
+        },
+        {
+            "JAK2": "0"
+        },
+        {
+            "TRAF2": "0"
+        },
+        {
+            "LYN": "0"
+        },
+        {
+            "NR3C1": "0"
+        },
+        {
+            "YWHAB": "0"
+        },
+        {
+            "HSP90AA1": "0"
+        },
+        {
+            "PLCG1": "0"
+        },
+        {
+            "RAF1": "0"
+        },
+        {
+            "MAPK3": "0"
+        },
+        {
+            "PTPN6": "0"
+        },
+        {
+            "LCK": "0"
+        },
+        {
+            "CASP3": "0"
+        },
+        {
+            "ABL1": "0"
+        },
+        {
+            "PTPN11": "0"
+        },
+        {
+            "STAT3": "0"
+        },
+        {
+            "RELA": "0"
+        },
+        {
+            "HDAC1": "0"
+        },
+        {
+            "JUN": "0"
+        },
+        {
+            "BRCA1": "0"
+        },
+        {
+            "SHC1": "0"
+        },
+        {
+            "PIK3R1": "0"
+        },
+        {
+            "AKT1": "0"
+        },
+        {
+            "RB1": "0"
+        },
+        {
+            "PRKCA": "0"
+        },
+        {
+            "FYN": "0"
+        },
+        {
+            "CSNK2A1": "0"
+        },
+        {
+            "MAPK1": "0"
+        },
+        {
+            "AR": "0"
+        },
+        {
+            "CTNNB1": "0"
+        },
+        {
+            "TGFBR1": "0"
+        },
+        {
+            "SMAD3": "0"
+        },
+        {
+            "CREBBP": "0"
+        },
+        {
+            "SMAD4": "0"
+        },
+        {
+            "EGFR": "0"
+        },
+        {
+            "EP300": "0"
+        },
+        {
+            "SMAD2": "0"
+        },
+        {
+            "YWHAG": "0"
+        },
+        {
+            "SRC": "0"
+        },
+        {
+            "ESR1": "0"
+        },
+        {
+            "GRB2": "0"
+        },
+        {
+            "TP53": "0"
+        }
+    ]
+}

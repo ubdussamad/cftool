@@ -114,12 +114,21 @@
 
         <br/>
         <br/>
-        <span class="form-h2" title="Set the |V|min for leaf nodes. The minimum number of nodes to stop at.">
+        <span class="form-h2" name="v_min" title="Set the |V|min for leaf nodes. The minimum number of nodes to stop at.">
           Set the |V|<sub>min</sub> for leaf nodes.
         </span>
-        <input type="text" placeholder="3" value=3>
+        <input type="number" min="1" value=3 required>
+        <br/>
+
+
+        <br/>
+        <span class="form-h2" name="kreg_nums" title="Set the number of top-most degree nodes to trace. Upper limit is the total number of nodes in your network.">
+          Set the number of top-most degree nodes to trace.
+        </span>
+        <input type="number" min="1" value=30 required>
         <br/>
         <br/>
+
         <span class="form-h2" title="Select an edgelist file. The file should be a Tab-separated value edge-list. https://en.wikipedia.org/wiki/Tab-separated_values">
           Select Edgelist File: <i> (.tsv) </i>
         </span>
@@ -225,11 +234,15 @@ text {
     var node = svg.append("g")
         .attr("class", "nodes")
       .selectAll("g")
+      .attr("title", "Something something.")
       .data(graph.nodes)
       .enter().append("g")
 
+    node.append("svg:title").text(function(d) { return "Still DRE"; });
+
     node.append("image")
       .attr("xlink:href", "media/gene.png")
+      // .attr("title", function (d) { return "Something something.";} )
       .attr("x", -8)
       .attr("y", -8)
       .attr("width", 36)
@@ -240,6 +253,7 @@ text {
     //   .attr("fill", function(d) { return color(d.group); });
 
     // Create a drag handler and append it to the node object instead
+    
     var drag_handler = d3.drag()
         .on("start", dragstarted)
         .on("drag", dragged)
@@ -253,6 +267,8 @@ text {
         })
         .attr('x', 10)
         .attr('y', 6);
+    
+    // var titles = node
 
     node.append("title")
         .text(function(d) { return d.id; });

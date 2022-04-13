@@ -52,5 +52,13 @@ border: 1px solid black;
 }
 
 .selected_node {
-  stroke : 
+  stroke : #3ea3c1;
+}
+
+.node_with_keyregs {
+  stroke : rgb(113, 210, 113);
+}
+
+.node_without_keyregs {
+  stroke : #ff8080;
 }

@@ -1,1 +1,0 @@
-{"directed": false, "multigraph": false, "graph": {}, "nodes": [{"id": "ICAM4"}, {"id": "ITGAM"}, {"id": "ICAM2"}, {"id": "HP"}], "links": [{"source": "ICAM4", "target": "ITGAM"}, {"source": "ITGAM", "target": "ICAM2"}, {"source": "ITGAM", "target": "HP"}]}

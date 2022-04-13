@@ -1,0 +1,56 @@
+.node {
+    cursor: pointer;
+}
+
+.node circle {
+  fill: #fff;
+  stroke-width: 2px;
+}
+
+.node text {
+  font: 12px sans-serif;
+}
+
+.link {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 2px;
+}
+
+.sixtynine {
+/* background-color:aqua; */
+border: 1px solid black;
+}
+
+
+.container {
+    border : 1px solid black;
+    display: flex;
+}
+
+.details_container {
+    /* border : 1px solid rgb(0, 0, 0); */
+    padding-left: 10px;
+    box-shadow: 1px 1px 3px rgb(71, 70, 70);
+    width: 300px;
+    font: 13px sans-serif;
+}
+
+.tooltip_heading {
+  fill:#3b3a3f;
+  font: 13px sans-serif;
+}
+
+.tooltip_tspan {
+    fill:#4a3a99;
+    font: 11px sans-serif;
+}
+
+.tooltip_tspan_key_reg {
+  fill: rgb(215, 41, 41);
+  font: 10px sans-serif;
+}
+
+.selected_node {
+  stroke : 
+}

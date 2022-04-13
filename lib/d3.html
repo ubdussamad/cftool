@@ -1011,61 +1011,38 @@ var treeData = {
         }
     ]
 }
-// var treeData =
-//   {
-//     "name": "Top Level",
-//     "children": [
-//       { 
-//         "name": "Level 2: A",
-//         "children": [
-//           { "name": "Son of A" },
-//           { "name": "Daughter of A" }
-//         ]
-//       },
-//       { "name": "Level 2: B" }
-//     ]
-//   };
 
-// // var treeData = d3.json("/home/samad/Work/Community-Finding-Tools/keyregs_tree.json")
-// // var treeData = null;
-// // d3.json("/home/samad/Work/Community-Finding-Tools/keyregs_tree.json").then(function(data){ treeData = data; });
-// function Get(yourUrl){
-//     var Httpreq = new XMLHttpRequest(); // a new request
-//     Httpreq.open("GET",yourUrl,false);
-//     Httpreq.send(null);
-//     return Httpreq.responseText;          
-// }
-
-
-// data = Get("keyregs_tree.json");
-// var treeData = JSON.parse(data);
-// console.log(treeData);
-// var treeData =  crossfilter(treeData);
 // Set the dimensions and margins of the diagram
 var margin = {top: 20, right: 90, bottom: 30, left: 90},
     width = 1260 - margin.left - margin.right,
     height = 800 - margin.top - margin.bottom;
 
-// append the svg object to the body of the page
-// appends a 'group' element to 'svg'
-// moves the 'group' element to the top left margin
 var svg = d3.select("body").append("svg")
     .attr("width", width + margin.right + margin.left)
-    .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-    .attr("transform", "translate("
-          + margin.left + "," + margin.top + ")");
+    .attr("height", height + margin.top + margin.bottom);
 
-var i = 0,
-    duration = 750,
-    root;
+svg.append("rect")          // attach a line
+    .style("stroke", "black")  // colour the line
+    .attr('width' , 1256)//+170)
+    .attr('height', 796)// + 50)
+    .attr('x' , 2)
+    .attr('y' , 2)
+    .style("fill", "none");
+
+svg.append("g")
+    .attr("transform", "translate("+ margin.left + "," + margin.top + ")");
+
+
+var i = 0;
+var duration = 750;
+var root;
 
 // declares a tree layout and assigns the size
-var treemap = d3.tree().size([height, width]);
+var treemap = d3.tree().size([height, width ]);
 
 // Assigns parent, children, height, depth
 root = d3.hierarchy(treeData)//, function(d) { return d.children; });
-root.x0 = height/2;
+root.x0 = height/2 ;
 root.y0 = 0;
 
 // Collapse after the second level
@@ -1104,7 +1081,7 @@ function update(source) {
   var nodeEnter = node.enter().append('g')
       .attr('class', 'node')
       .attr("transform", function(d) {
-        return "translate(" + source.y0 + "," + source.x0 + ")";
+        return "translate(" + source.x0 + "," + source.y0 + ")";
     })
     .on('click', click);
 
@@ -1135,7 +1112,7 @@ function update(source) {
   nodeUpdate.transition()
     .duration(duration)
     .attr("transform", function(d) { 
-        return "translate(" + d.y + "," + d.x + ")";
+        return "translate(" + d.x + "," + d.y + ")";
      });
 
   // Update the node attributes and style
@@ -1173,7 +1150,7 @@ function update(source) {
   var linkEnter = link.enter().insert('path', "g")
       .attr("class", "link")
       .attr('d', function(d){
-        var o = {x: source.x0, y: source.y0}
+        var o = {y: source.y0, x: source.x0}
         return diagonal(o, o)
       });
 
@@ -1189,7 +1166,7 @@ function update(source) {
   var linkExit = link.exit().transition()
       .duration(duration)
       .attr('d', function(d) {
-        var o = {x: source.x, y: source.y}
+        var o = {y: source.y, x: source.x}
         return diagonal(o, o)
       })
       .remove();
@@ -1203,10 +1180,10 @@ function update(source) {
   // Creates a curved (diagonal) path from parent to the child nodes
   function diagonal(s, d) {
 
-    path = `M ${s.y} ${s.x}
-            C ${(s.y + d.y) / 2} ${s.x},
-              ${(s.y + d.y) / 2} ${d.x},
-              ${d.y} ${d.x}`
+    path = `M ${s.x} ${s.y}
+            C ${(s.x + d.x) / 2} ${s.y},
+              ${(s.x + d.x) / 2} ${d.y},
+              ${d.x} ${d.y}`
 
     return path
   }

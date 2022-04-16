@@ -16,8 +16,12 @@
 
     $new_page_load  = false;
 
+    // echo $_POST['cf-algo'];
+    // echo $_POST['v_min'];
+    // echo $_POST['keyreg_num'];
+    
     # Server side post data verification block.
-    $injection_vectors = array('job_name', 'usr_name');
+    $injection_vectors = array('job_name', 'usr_name', 'cf_algo' , 'v_min', 'keyreg_num' , 'output_type');
     for ($x = 0; $x < count($injection_vectors) ; $x++) {
       if (isset( $_POST[ $injection_vectors[$x] ] )){
 
@@ -61,6 +65,11 @@
       
       $usr_name   = htmlspecialchars($_POST['usr_name']);
       $job_name   = htmlspecialchars($_POST['job_name']);
+      $cf_algo    = htmlspecialchars($_POST['cf_algo']);
+      $v_min      = htmlspecialchars($_POST['v_min']);
+      $keyreg_num = htmlspecialchars($_POST['keyreg_num']);
+      $output_type= htmlspecialchars($_POST['output_type']);
+
 
       $filename   = htmlspecialchars($_FILES['sif_file']['name']);
       $file_type  = $_FILES['sif_file']['type'];
@@ -90,14 +99,20 @@
 
       $file_data = fread($file,filesize($target_file));
 
+      # TODO: This checks if the TSV is valid or not, maybe make room for JSON graph inputs as well.
       $tsv_count =  preg_match_all("/.+\t.+[\r|\n]/", $file_data);
       $newline_count = preg_match_all("[\r|\n]", $file_data);
-
       // TODO: When Finalizing the Project, this should either be an error or warning,
       if ($tsv_count != $newline_count) {
         echo "<script> alert(\"Invalid file type\") </script>" ;
       }
       fclose($file);
+
+      # Create a new file for arguments in the folder.
+      $arg_file = fopen($target_dir . "arguments.txt", "w") or badRequestHandler();
+      $txt = $cf_algo . "\n" . $v_min . "\n" . $keyreg_num . "\n" .$output_type;
+      fwrite($arg_file, $txt);
+      fclose($arg_file);
 
       chdir("scheduler");
       $cmd = "python3 scheduler.py a \"" . $usr_name . "\" \"" .  $job_name . "\"";

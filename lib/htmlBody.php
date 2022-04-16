@@ -100,7 +100,7 @@
         </span>
         <br/>
         
-        <select id="cf-algo" name="cf-algo" title="Select the algorithm using which you would like to find the communities in your network.">
+        <select id="cf-algo" name="cf_algo" title="Select the algorithm using which you would like to find the communities in your network.">
           <option value="cfa-leading_eigen_vector" title="M. E. J. Newman's leading eigenvector method for detecting community structure.">
             Leading Eigen Vector Method
           </option>
@@ -117,7 +117,7 @@
         <span class="form-h2" name="v_min" title="Set the |V|min for leaf nodes. The minimum number of nodes to stop at.">
           Set the |V|<sub>min</sub> for leaf nodes.
         </span>
-        <input type="number" min="1" value=3 required>
+        <input name="v_min" type="number" min="1" value=3 required>
         <br/>
 
 
@@ -125,7 +125,7 @@
         <span class="form-h2" name="kreg_nums" title="Set the number of top-most degree nodes to trace. Upper limit is the total number of nodes in your network.">
           Set the number of top-most degree nodes to trace.
         </span>
-        <input type="number" min="1" value=30 required>
+        <input name="keyreg_num" type="number" min="1" value=30 required>
         <br/>
         <br/>
 
@@ -144,7 +144,7 @@
         </span>
         <br/>
         
-        <select id="output-type" name="output-type" title="Select the output file type for the generated leaf communities.">
+        <select id="output-type" name="output_type" title="Select the output file type for the generated leaf communities.">
           <option value="output-type-edgelist-tsv" title="The output will be collection of edgelists which will be in .tsv format.">
             Edgelist (TSV format)
           </option>
@@ -183,25 +183,25 @@
 
 <style>
 
-.links line {
-  stroke: #999;
-  stroke-opacity: 0.6;
-}
+  .links line {
+    stroke: #999;
+    stroke-opacity: 0.6;
+  }
 
-.nodes circle {
-  stroke: #fff;
-  stroke-width: 4px;
-}
+  .nodes circle {
+    stroke: #fff;
+    stroke-width: 4px;
+  }
 
-text {
-  font-family: sans-serif;
-  font-size: 10px;
-  padding-left: 5px;
-  color:green;
-}
+  text {
+    font-family: sans-serif;
+    font-size: 10px;
+    padding-left: 5px;
+    color:green;
+  }
 
 </style>
-
+<!-- 
 <div style="border:1px solid black;border-radius:6px;">
 <svg width="180" height="180">
 </svg>
@@ -311,7 +311,7 @@ text {
     d.fy = null;
   }
 
-</script>
+</script> -->
 
 </div>
 </body>

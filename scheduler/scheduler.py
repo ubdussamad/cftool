@@ -79,17 +79,25 @@ def refresh():
             if open_slots:
                 status = 1
                 try:
-                    # Giving the subprocess call a diffrent stdout files
+                    # Giving the subprocess call a diffrent stdout files.
                     # eliminates the issue of php waiting for the call to finish before loading the whole page.
-                    # There could be an issue when multiple jobs might use the same stdout file for printing output
+                    # There could be an issue when multiple jobs might use the same stdout file for printing output.
                     # This could be eliminated by creating a specific file for each job_id.
-                    subprocess.Popen(['bash', 'jobber.sh',str(u_id),str(j_id), str(zlib.crc32(bytes( u_id+"salt"+j_id ,"utf-8"))) ] , stdout=open("jobber_out.txt" , 'w'))
+                    subprocess.Popen([
+                            'bash',
+                            'jobber.sh',
+                            str(u_id),
+                            str(j_id),
+                            str(zlib.crc32(bytes( u_id+"salt"+j_id ,"utf-8")))
+                        ]
+                        , stdout=open("jobber_out.txt" , 'w'))
+
                 except Exception as e:
                     sch_log("Exception happened while running Job_id: %s , %s"%(j_id,e))
                     status = 2
                 sch_log("Running Job_ID: %s"%(j_id))
                 q = "UPDATE jobs SET job_status = ? WHERE usr_name=? AND job_id=?"
-                cursor = conn.execute(q, (str(status), u_id, j_id) )
+                cursor = conn.execute(q, (str(status), u_id, j_id))
                 conn.commit()
                 open_slots-=1
 

@@ -3,10 +3,13 @@
   <head>
     <meta charset="utf-8">
 
-    <title>Tree Example</title>
+    <title> Community Finder | SCIS JNU </title>
 
     <link href="d32_style.css" rel="stylesheet">
-
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Titillium+Web:wght@300&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Whisper&display=swap');
+    </style> 
   </head>
 
   <body>
@@ -17,11 +20,54 @@
 	<div class="container">
     <div class="details_container" style="display:list-item;line-height: 10px;">
       <p style="display: none;" id="current_selection_lineage">0</p>
-      <p id="lineage_display"> 0 -> </p>
-      <p id="current_depth"> Current Depth : 0 </p>
-      <p id="vertice_count" >Vertex Count : 0</p>
+      
+      <div id="lineage_div">
+      <p id="lineage_trace_heading">Node Lineage Trace: 
+        <span id="help_button" title="Show help maybe??"> Help </span>
+        <span id="mouseover_overlay_selector" title="Enable or Disable mouseover information overlay."> Overlay </span>
+      </p>
+      <p id="lineage_display"> Double Click to Select Node. </p>
+      </div>
+      <table class="selection_table_1">
+        <tr class='selection_table_1_tr'>
+          <th class='selection_table_1_th'> Current depth: </th>
+          <td class='selection_table_1_td' id="selection_current_depth"> 0 </td>
+          </td>
+          <th class='selection_table_1_th'> Vertex Count </th>
+          <td class='selection_table_1_td' id="selection_vertex_count"> 0 </td>
+          </td>
+        </tr>
+        <tr class='selection_table_1_tr'>
+          <th class='selection_table_1_th'> Key Reg Count: </th>
+          <td class='selection_table_1_td' id="selection_keyreg_count"> 0 </td>
+          <th class='selection_table_1_th'> Is Leaf Node: </th>
+          <td class='selection_table_1_td' id="selection_is_leaf_node"> False </td>
+          </td>
+        </tr>
+        <tr class='selection_table_1_tr'>
+          <th class='selection_table_1_th'> Algorithm </th>
+          <td class='selection_table_1_td' id="method_label" colspan="3"> Leading eigen Vector </td>
+          <!-- <th class='selection_table_1_th'> Is Root Node: </th>
+          <td class='selection_table_1_td' id="selection_is_root_node"> False </td> -->
+        </tr>
+      </table>
+      
+      <div class="details_btn_container">
+      <button id="tabular_displ_en" class="selection_btns"> Show Table </button>
+      <button id="graph_displ_en" class="selection_btns"> Graphs </button>
+      <button id="something_else" class="selection_btns"> Unselect </button>
+      </div>
 
-    </div>
+      <table class="selection_table_2" id="selection_table_2">
+      <!-- To be populated automatically by key regulator details script. -->
+      </table>
+
+      <div class="graph_container" id="graph_container">
+          <select name="key_reg_selection_ddm" id="key_reg_selection_ddm">
+            <option value="0"> Select Key Regulator </option>
+          </select>
+          <div id="graph_details_cont"></div>
+      </div>
   </div>
   </body>
 </html>

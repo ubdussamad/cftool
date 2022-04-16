@@ -51,7 +51,7 @@ class CommunityFinder:
     def get_graph(self) -> igraph.Graph:
         return self._graph
 
-    def parse(self, subgraph_min_vertices=None, key_regulator_bin_width : int = 50) -> Dict[str, igraph.Graph]:
+    def parse(self, subgraph_min_vertices=None, key_regulator_bin_width : int = 50 , cf_algo: str = None) -> Dict[str, igraph.Graph]:
 
         if isinstance(subgraph_min_vertices, int):
             self.subgraph_min_vertices = subgraph_min_vertices
@@ -85,20 +85,25 @@ class CommunityFinder:
             'num_vertices' : 0,
             'is_leaf_node' : False,
             'children': [],
-            'key_regs' : []
+            'key_regs' : [],
         }
 
         self.key_regulators = self._max_degree_nodes.copy()
-
-        self.algo_switch_node_count = 10000
-        if len(self._graph.vs) > self.algo_switch_node_count:
-            sys.stdout.write(f"\n\nUsing the faster Louvain's method (a.k.a community_multilevel) instead of leading eigenvector one since |V| > {self.algo_switch_node_count}.\n")
-            self.find_communities_recursive(self._graph, tree = self.tree['root'], method=1)
-        else:
-            sys.stdout.write(f"\n\nUsing the leading eigenvector method since |V| < {self.algo_switch_node_count}.")
-            self.find_communities_recursive(self._graph, tree = self.tree['root'], method=1)
-
         
+        if cf_algo is not None and isinstance(cf_algo, str):
+            self.cf_algo = cf_algo # This maybe used somewhere in the class so lets make it a class variable.
+            if cf_algo == 'louvain':
+                sys.stdout.write(f"\n\nUsing the faster Louvain's method (a.k.a community_multilevel) instead of leading eigenvector one since |V| > {self.algo_switch_node_count}.\n")
+                self.find_communities_recursive(self._graph, tree = self.tree['root'], method=0)
+            elif cf_algo == 'leading_eigenvector':
+                sys.stdout.write(f"\n\nUsing the leading eigenvector method since |V| < {self.algo_switch_node_count}.")
+                self.find_communities_recursive(self._graph, tree = self.tree['root'], method=1)
+            else:
+                raise ValueError(f"Invalid community finding algorithm {cf_algo}.")
+        else:
+            sys.stdout.write(f"\n\nUsing the leading eigenvector method since no algo is defined.")
+            self.find_communities_recursive(self._graph, tree = self.tree['root'], method=1)
+
         # Edgelist not required.
         _merged_dict = self._root_communities_edgelist.copy()
         _merged_dict.update(self._leaf_communities_edgelist)
@@ -162,12 +167,29 @@ class CommunityFinder:
             self.communities_subgraph_inclusive[depth] = [graph.copy(),]
         
         # Tree setting spot.
-        key_regs = [i["_nx_name"] for i in graph.vs if i["_nx_name"] in self.key_regulators.keys()]
-        has_keyreg = True if len(key_regs) > 0 else False
+        _key_reg_vertex = [ [ i.index,i["_nx_name"] ] for i in graph.vs if i["_nx_name"] in self.key_regulators.keys()]
+        has_keyreg = True if len(_key_reg_vertex) > 0 else False
+
+        l = dict()
+        _property_headings_list = [
+            "eigen_vector_centrality",
+            "betweenness_centrality",
+            "closeness_centrality",
+            "probability_degree_distribution",
+            "clustering_coefficient",
+            "neighborhood_connectivity",
+        ]
+        
+        for vertex in _key_reg_vertex:
+            list_index = 0
+            l[vertex[1]] = dict()
+            for value in self.find_topological_and_centrality_properties( graph, vertex[0] ):
+                l[vertex[1]][_property_headings_list[list_index]] = value
+                list_index += 1
 
         tree['lineage'] = '0' if depth is None else depth
         tree['current_depth'] = tree['lineage'].count('_') + 1
-        tree['key_regs'] = key_regs
+        tree['key_regs'] = l
         tree['num_vertices'] = len(graph.vs)
         tree['has_keyreg'] = has_keyreg
         tree['name'] = 'root' if depth is None else depth.split('_')[-1]
@@ -189,8 +211,8 @@ class CommunityFinder:
             _edg_list = [ [ graph.vs[edge]["_nx_name"] for edge in line] for line in graph.get_edgelist() ]
             self._root_communities_edgelist[f"0_{depth}"] = _edg_list
 
-        if method == 0:communities = list(graph.community_leading_eigenvector( ))
-        elif method == 1:communities = list(graph.community_multilevel())
+        if method == 1:communities = list(graph.community_leading_eigenvector( ))
+        elif method == 0:communities = list(graph.community_multilevel())
 
         for vertices in communities:
             if len(vertices) == len(graph.vs):communities.remove(vertices)
@@ -202,7 +224,7 @@ class CommunityFinder:
                 'lineage' : None,
                 'current_depth' : None,
                 'children': [],
-                'key_regs' : []
+                'key_regs' : {},
             }
 
             sub_graph = graph.subgraph( graph.vs.select(community_vertices) )
@@ -216,18 +238,21 @@ class CommunityFinder:
             # Tree Stuff.
             tree['children'].append(_c_tree)
 
-    def find_topological_and_centrality_properties(self, graph: igraph.Graph , vertex_index: int = None ):
-        
+    def find_topological_and_centrality_properties(self, graph: igraph.Graph , vertex_index: int):
+
         # See: https://igraph.org/python/doc/api/igraph._igraph.GraphBase.html#eigenvector_centrality
-        l = len(graph.vs)
-        _eigen_vector_centrality = graph.evcent()[vertex_index]/( ( (l-1)*(l-2) ) / 2 ) 
+        vertice_count = len(graph.vs)
+        
+        if vertice_count < 3:
+            return (-1,-1,-1,-1,-1,-1)
+
+        _eigen_vector_centrality = graph.evcent()[vertex_index]/( ( (vertice_count-1)*(vertice_count-2) ) / 2 )
 
         # See: https://igraph.org/python/doc/api/igraph._igraph.GraphBase.html#betweenness
         # Also see: https://en.wikipedia.org/wiki/Betweenness_centrality#Definition
         # The value is scaled by dividing the centrality value by total number of vertex pairs in the graph.
         _bc_arr = graph.betweenness()
-        # l = len(_bc_arr)
-        _betweenness_centrality = _bc_arr[vertex_index] / ( ( (l-1)*(l-2) ) / 2 ) # Good 
+        _betweenness_centrality = _bc_arr[vertex_index] / ( ( (vertice_count-1)*(vertice_count-2) ) / 2 ) # Good 
 
 
         # See: https://igraph.org/python/doc/api/igraph._igraph.GraphBase.html#closeness
@@ -300,7 +325,9 @@ class CommunityFinder:
 
 
 if __name__ == "__main__":
-
+    # The input to this script are: 
+    # network file , cf method , V(min) , number of key regs to trace , output file format , dir to write output to.
+    # cf_method => [louvain, leading_eigenvector]
     if len(sys.argv) < 3:
         sys.stderr.write("Please provide filepath as first commandline arg and a directory to write the edgelist.")
 
@@ -314,7 +341,7 @@ if __name__ == "__main__":
 
         key_regs = cf.key_regulators
 
-        with open("lib/knowledge_tree.json", "w") as fp:
+        with open("lib/knowledge_tree_1.json", "w") as fp:
             json.dump(tree__,fp)
 
         community_subgraph_inclusive = cf.communities_subgraph_inclusive
@@ -323,9 +350,15 @@ if __name__ == "__main__":
 
         key_regs.clear()
     else:
-        cf = CommunityFinder(sys.argv[1])
+        root_network_file, cf_method, v_min, num_key_regs, output_format, output_dir = sys.argv[1:]
+
+        cf = CommunityFinder(root_network_file)
         
-        leaf_communities = cf.parse()
+        leaf_communities = cf.parse(
+            subgraph_min_vertices=int(v_min),
+            key_regulator_bin_width=int(num_key_regs),
+            cf_method=cf_method
+            )
         
         lc = cf._leaf_communities_edgelist
 
@@ -333,4 +366,8 @@ if __name__ == "__main__":
 
         community_subgraph_inclusive = cf.communities_subgraph_inclusive
 
-        cf.write_edgelist_to_files(base_dir=sys.argv[2])
+        # cf.write_edgelist_to_files(base_dir=sys.argv[2])
+        tree__ = cf.tree['root']
+
+        with open(f"{output_dir.rstrip('/')}/knowledge_tree_1.json", "w") as fp:
+            json.dump(tree__,fp)

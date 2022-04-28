@@ -145,6 +145,19 @@ html {
     opacity: 1;
     color:black;}
 
+#csv_line_plot_render {
+  border: 1px solid #3b3a3f;
+  border-radius: 3px;
+  box-shadow: -0.5px 1px 1px #6a6767;
+  margin-bottom: 28px !important;
+  padding: 2px;
+  overflow: hidden;
+  text-decoration: none;
+  color: black;
+  background-color: #e9e9ed;
+  font-weight: 390;
+}
+
 
 #selection_keyreg_prop_table {
   display: table;

@@ -429,6 +429,9 @@ class CommunityFinder:
             os.mkdir(_prop_plot__dir)
         except FileExistsError:
             pass
+        
+        # Add root node as well.
+        self.communities_subgraph_inclusive['0'] = self._graph
 
         for _depth in self.communities_subgraph_inclusive.keys():
             graph = self.communities_subgraph_inclusive[_depth]

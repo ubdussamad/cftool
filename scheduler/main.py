@@ -443,14 +443,24 @@ class CommunityFinder:
                 continue
                 # return (-1,-1,-1,-1,-1,-1)
 
-            _eigen_vector_centrality = [ i/(((vertice_count-1)*(vertice_count-2))/2) for i in graph.evcent()]
-            _betweenness_centrality = [ i / ( ( (vertice_count-1)*(vertice_count-2) ) / 2 ) for i in graph.betweenness() ]
-            _closeness_centrality = graph.closeness()
-
             _degrees = graph.degree()
+
+
+            _eigen_vector_centrality = [ i/(((vertice_count-1)*(vertice_count-2))/2) for i in graph.evcent()]
+            _eigen_vector_centrality = sorted ( [ [i,j] for i,j in zip(_degrees , _eigen_vector_centrality) ] , key = lambda x:x[0] , reverse = False)
+
+            _betweenness_centrality = [ i / ( ( (vertice_count-1)*(vertice_count-2) ) / 2 ) for i in graph.betweenness() ]
+            _betweenness_centrality = sorted ( [ [i,j] for i,j in zip(_degrees , _betweenness_centrality) ] , key = lambda x:x[0] , reverse = False)
+
+            _closeness_centrality = graph.closeness()
+            _closeness_centrality = sorted ( [ [i,j] for i,j in zip(_degrees , _closeness_centrality) ] , key = lambda x:x[0] , reverse = False)
+
+            
             _p_degree_distribution = [ _degrees.count(i) / vertice_count for i in _degrees]
+            _p_degree_distribution = sorted ( [ [i,j] for i,j in zip(_degrees , _p_degree_distribution) ] , key = lambda x:x[0] , reverse = False)
 
             _clustering_coeff = graph.transitivity_local_undirected()
+            _clustering_coeff = sorted ( [ [i,j] for i,j in zip(_degrees , _clustering_coeff) ] , key = lambda x:x[0] , reverse = False)
 
             _neighborhood_connectivity = []
             for vertex in graph.vs():
@@ -460,7 +470,9 @@ class CommunityFinder:
                     _neighborhood_connectivity.append(0)
                     continue
                 _neighborhood_connectivity.append(sum( [graph.vs[_vid].degree() for _vid in neighbors ])/len(neighbors))
+            _neighborhood_connectivity = sorted ( [ [i,j] for i,j in zip(_degrees , _neighborhood_connectivity) ] , key = lambda x:x[0] , reverse = False)
             
+
             _prop_list = [
                 _eigen_vector_centrality,
                 _betweenness_centrality,
@@ -470,14 +482,16 @@ class CommunityFinder:
                 _neighborhood_connectivity
             ]
 
+            
+
             for i in range(len(_prop_list)):
                 property_name = self._property_headings_list[i]
-                y_property_values = _prop_list[i]
-                x_property_values = range(len(y_property_values))
+                x_property_values = [x for x,_ in _prop_list[i]]
+                y_property_values = [y for _,y in _prop_list[i]]
 
                 l = '\n'.join(
                     [
-                        f"{x_property_values[i]},{y_property_values[i]}" for i in x_property_values
+                        f"{x_property_values[i]},{y_property_values[i]}" for i in range(len(x_property_values))
                     ]
                 )
 

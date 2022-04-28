@@ -1,0 +1,67 @@
+<html>
+  <head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="https://d3js.org/d3.v4.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['corechart']});
+      
+        
+      let params = new URLSearchParams(location.search);
+      let csv = params.get('csv');
+      let y_title = params.get('y_title');
+
+      function getMinMaxOf2DIndex (arr, idx) {
+        return {
+            min: Math.min.apply(null, arr.map(function (e) { return e[idx]})),
+            max: Math.max.apply(null, arr.map(function (e) { return e[idx]}))
+        }
+      } 
+
+      d3.csv(csv, function(rows) {
+        console.log(rows);
+        rows = rows.map(function(row) {
+          if (row.index != 'index') {
+            return [ parseInt(row.index) , parseFloat(row.value)];
+          }
+          return [row.index, row.value];
+        });
+
+        const x_max = getMinMaxOf2DIndex(rows, 0).max;
+        const y_max = getMinMaxOf2DIndex(rows, 1).max;
+        const x_min = getMinMaxOf2DIndex(rows, 0).min;
+        const y_min = getMinMaxOf2DIndex(rows, 1).min;
+
+        rows.unshift( ['index', 'value'] );
+
+        console.log(rows);
+
+        function drawChart() {
+            var data = google.visualization.arrayToDataTable(rows);
+
+
+
+            console.log(x_max + ' ' + y_max + ' ' + x_min + ' ' + y_min);
+
+            var options = {
+            title: y_title.toUpperCase() + ' vs. NODE DEGREE',
+            hAxis: {title: 'node_degrees (ascending)', minValue: x_min - (0.3 * x_min), maxValue: x_max + (0.1 * x_max)},
+            vAxis: {title: y_title , minValue: y_min - (0.1 * y_min), maxValue: y_max + (0.1 * y_max)},
+            legend: 'none'
+            };
+
+            var chart = new google.visualization.ScatterChart(document.getElementById('chart_div'));
+
+            chart.draw(data, options);
+        }
+        google.charts.setOnLoadCallback(drawChart);
+
+        // drawChart();
+    });
+
+    // google.charts.setOnLoadCallback(drawChart);
+    </script>
+  </head>
+  <body>
+    <div id="chart_div" style="width: 900px; height: 500px;"></div>
+  </body>
+</html>

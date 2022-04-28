@@ -1,3 +1,8 @@
+html {
+  box-sizing: border-box;
+}
+
+
 /* Tree Data render. */
   .node {
       cursor: pointer;}
@@ -107,7 +112,7 @@
 
 /* Key Reg Table Stuff */
 .selection_table_2 {
-  display: table;
+  display:table;
   width: 100%;}
 .key_reg_header_cell {
   text-align: center;
@@ -140,6 +145,30 @@
     opacity: 1;
     color:black;}
 
+
+#selection_keyreg_prop_table {
+  display: table;
+  width: 100%;
+}
+
+.keyreg_prop_table_row {
+  border: 1px solid #3b3a3f;
+  text-align: center;
+  background-color: rgb(162, 236, 162);
+}
+
+.keyreg_prop_table_cell {
+  border: 1px solid #3b3a3f;
+  padding: 2px;
+  text-align: center;
+  background-color: rgb(162, 236, 162);
+
+}
+
+.keyreg_prop_table_cell:nth-child(even) {
+  background-color: rgb(236, 228, 162);
+}
+
 .details_btn_container {
   width: 99%;
   display: flex;
@@ -164,4 +193,18 @@
   display: block;
   width: max-content;
   margin: 0px 0px 0px 5px;
+}
+
+#key_reg_property_selection_ddm {
+  font-size: 10px;
+  display: block;
+  width: max-content;
+  margin: 0px 0px 0px 5px;
+}
+
+#selection_ddms_div {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 0px 0px 0px 0px;
 }

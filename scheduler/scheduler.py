@@ -18,7 +18,7 @@ JOB_TRACKER_FILE = "jobs.db"
 SCH_DEBUG = 0
 
 MAX_RUNNING_JOBS_AT_ONCE = 4
-MAX_HISTORY_RETENTION_LIMIT_HOURS = 24 * 7
+MAX_HISTORY_RETENTION_LIMIT_HOURS = 24 * 30
 MAX_TIME_A_JOB_CAN_RUN_FOR_HOURS = 1
 
 
@@ -40,7 +40,7 @@ conn.commit()
 
 def sch_log(*args):
     if SCH_DEBUG:
-        print(args)
+        print(f"Scheduler.py: {args}" , file = open("logs/scheduler.log" , 'a'))
 
 def refresh():
     global cursor
@@ -79,37 +79,59 @@ def refresh():
             if open_slots:
                 status = 1
                 try:
-                    # Giving the subprocess call a diffrent stdout files.
+                    # Giving the subprocess call a diffrent stdout files
                     # eliminates the issue of php waiting for the call to finish before loading the whole page.
-                    # There could be an issue when multiple jobs might use the same stdout file for printing output.
+                    # There could be an issue when multiple jobs might use the same stdout file for printing output
                     # This could be eliminated by creating a specific file for each job_id.
-                    subprocess.Popen([
-                            'bash',
-                            'jobber.sh',
-                            str(u_id),
-                            str(j_id),
-                            str(zlib.crc32(bytes( u_id+"salt"+j_id ,"utf-8")))
-                        ]
-                        , stdout=open("jobber_out.txt" , 'w'))
-
+                    subprocess.Popen(['bash', 'jobber.sh',str(u_id),str(j_id), str(zlib.crc32(bytes( u_id+"salt"+j_id ,"utf-8"))) ] , stdout=open("jobber_out.txt" , 'w'))
                 except Exception as e:
                     sch_log("Exception happened while running Job_id: %s , %s"%(j_id,e))
                     status = 2
                 sch_log("Running Job_ID: %s"%(j_id))
                 q = "UPDATE jobs SET job_status = ? WHERE usr_name=? AND job_id=?"
-                cursor = conn.execute(q, (str(status), u_id, j_id))
+                cursor = conn.execute(q, (str(status), u_id, j_id) )
                 conn.commit()
                 open_slots-=1
 
     # Clearing old and cancelled jobs
     cursor.execute("SELECT * FROM jobs WHERE job_status=2 or job_status=3 or job_status=4")
+
+    
+
     likely_removeable_jobs = cursor.fetchall()
+
+    sch_log(f"Likely cancellable jobs are: {cursor.fetchall()}")
+
     count = len(likely_removeable_jobs)
     if (count):
         timestamp = int(time.time())
-        cursor.execute("DELETE FROM jobs WHERE (job_status='4' and (? - timestamp > %d)) or\
-                        (job_status='1' and (? - timestamp > %d)) or\
-                        (job_status='3' or job_status='2')"%(int(MAX_HISTORY_RETENTION_LIMIT_HOURS*3600),int(MAX_TIME_A_JOB_CAN_RUN_FOR_HOURS*60)),(timestamp,timestamp))
+        sch_log(f"Timestamp is {timestamp}")
+
+        # ex_str = f'''
+        #     DELETE FROM jobs WHERE 
+        #         (job_status='4' and ('{timestamp}' - timestamp > %d)) or 
+        #         (job_status='1' and (? - timestamp > %d)) or 
+        #         (job_status='3' or job_status='2')"
+        # '''%(
+        #         int(MAX_HISTORY_RETENTION_LIMIT_HOURS*3600),
+        #         int(MAX_TIME_A_JOB_CAN_RUN_FOR_HOURS*60)),
+        #         (timestamp,timestamp)
+        #     )
+
+        cursor.execute(
+            "DELETE FROM jobs WHERE (job_status='4' and (? - timestamp > %d)) or (job_status='1' and (? - timestamp > %d)) or (job_status='3' or job_status='2')"%(
+                int(MAX_HISTORY_RETENTION_LIMIT_HOURS*3600),
+                int(MAX_TIME_A_JOB_CAN_RUN_FOR_HOURS*3600)
+                ),
+            (timestamp,timestamp)
+        )
+
+        # sch_log(f"Query is: {cursor.statement}")
+        # sch_log(f"Query args are: {cursor.lastrowid}")
+        # kj = '\n'.join(cursor.fetchall())
+        # sch_log(f"The row being deleted are {cursor.fetchall()}")
+        # for i in cursor.fetchall():
+        #     sch_log(f"Deleting job {i}")
         conn.commit()
 
     for i in likely_removeable_jobs:
@@ -221,7 +243,12 @@ def main (args):
 
         # Check if the job exists or not
         # Select the job and update it's status according to the received command line arg
-        
+        if str(args[3]) == '3':
+            sch_log("Deleting since stopped\n %s"%', '.join(args))
+
+        if str(args[3]) == '4':
+            sch_log("Finished\n %s"%', '.join(args))
+
         sch_log("Updating ... \n %s"%', '.join(args))
         if len(args) != 5:
             print("Missing/Too Many Args: Try: ./schedular [$CMD] [$JOB_ID]")

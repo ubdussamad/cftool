@@ -103,10 +103,10 @@
       $tsv_count =  preg_match_all("/.+\t.+[\r|\n]/", $file_data);
       $newline_count = preg_match_all("[\r|\n]", $file_data);
       // TODO: When Finalizing the Project, this should either be an error or warning,
-      if ($tsv_count != $newline_count) {
-        echo "<script> alert(\"Invalid file type\") </script>" ;
-      }
-      fclose($file);
+      // if ($tsv_count != $newline_count) {
+      //   echo "<script> alert(\"Invalid file type\") </script>" ;
+      // }
+      // fclose($file);
 
       # Create a new file for arguments in the folder.
       $arg_file = fopen($target_dir . "arguments.txt", "w") or badRequestHandler();

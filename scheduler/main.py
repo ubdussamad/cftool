@@ -1,14 +1,13 @@
-# /usr/bin/ python3.8
-from curses import has_key
-from random import randrange
+#!/usr/bin/env python3
 import sys, os
 from typing import BinaryIO, Dict, List, NoReturn, Optional, Union
 
 import igraph
 import json
 import networkx as nx
-# from networkx.classes.function import degree
+# import matplotlib.pyplot as plt
 from networkx.readwrite import json_graph
+from numpy import gradient
 
 class CommunityFinder:
     """
@@ -24,6 +23,7 @@ class CommunityFinder:
         self,
         edge_list_file: Optional[Union[str, BinaryIO]] = None,
         subgraph_min_vertices: int = 3,
+        output_format: str = "edgelist",
     ) -> None:
         self._graph: igraph.Graph = None
         self.subgraph_min_vertices = subgraph_min_vertices
@@ -34,6 +34,20 @@ class CommunityFinder:
         self._root_communities_edgelist: Dict[str, List[ List[str, str] ] ] = {}
         self.communities_subgraph_inclusive: Dict[str, igraph.Graph] = {}
         self.tree: Dict[str, List[ Dict[str, List[str] ]]] = dict()
+        self._property_headings_list : List[str] = [
+            "eigen_vector_centrality",
+            "betweenness_centrality",
+            "closeness_centrality",
+            "probability_degree_distribution",
+            "clustering_coefficient",
+            "neighborhood_connectivity",
+            "current_degree",
+        ]
+
+        if isinstance(output_format, str) and output_format.lower() in ["edgelist", "json"]:
+            self.output_format = output_format
+        else:
+            self.output_format = "edgelist"
 
     def set_graph(self, graph: Union[igraph.Graph, nx.Graph]) -> None:
         if not isinstance(graph, igraph.Graph):
@@ -75,7 +89,11 @@ class CommunityFinder:
 
         _degrees = self._graph.degree()
         _vertex_ids = sorted( range( len(_degrees) ) , key = lambda sub: _degrees[sub])[-key_regulator_bin_width:]
-        self._max_degree_nodes = {self._graph.vs[i]["_nx_name"]:[self._graph.vs[i].degree()] for i in _vertex_ids}
+        self._max_degree_nodes : Dict[ str , List[ int ] ] = { self._graph.vs[i]["_nx_name"]:[self._graph.vs[i].degree()] for i in _vertex_ids}
+
+        # A rather unusual data dictionary, containing a dictionary of vertice names as keys
+        # a list of just one integer which is that node's degree,
+        self._key_reg_trace : Dict[str, str] = { node : "" for node in self._max_degree_nodes.keys() }
 
         self.tree['root'] = {
             'name' : 'root',
@@ -86,6 +104,10 @@ class CommunityFinder:
             'is_leaf_node' : False,
             'children': [],
             'key_regs' : [],
+            'cf_algo' : '',
+            'output_format' : self.output_format,
+            'subgraph_min_vertices' : self.subgraph_min_vertices,
+            'key_regulator_bin_width' : key_regulator_bin_width,
         }
 
         self.key_regulators = self._max_degree_nodes.copy()
@@ -93,20 +115,27 @@ class CommunityFinder:
         if cf_algo is not None and isinstance(cf_algo, str):
             self.cf_algo = cf_algo # This maybe used somewhere in the class so lets make it a class variable.
             if cf_algo == 'louvain':
-                sys.stdout.write(f"\n\nUsing the faster Louvain's method (a.k.a community_multilevel) instead of leading eigenvector one since |V| > {self.algo_switch_node_count}.\n")
+                self.tree['root']['cf_algo'] = 'Louvain'
+                sys.stdout.write(f"\nUsing the faster Louvain's method (a.k.a community_multilevel).\n")
                 self.find_communities_recursive(self._graph, tree = self.tree['root'], method=0)
             elif cf_algo == 'leading_eigenvector':
-                sys.stdout.write(f"\n\nUsing the leading eigenvector method since |V| < {self.algo_switch_node_count}.")
+                self.tree['root']['cf_algo'] = 'Leading eigenvector'
+                sys.stdout.write(f"\nUsing the leading eigenvector method since |V|.")
                 self.find_communities_recursive(self._graph, tree = self.tree['root'], method=1)
             else:
                 raise ValueError(f"Invalid community finding algorithm {cf_algo}.")
         else:
-            sys.stdout.write(f"\n\nUsing the leading eigenvector method since no algo is defined.")
-            self.find_communities_recursive(self._graph, tree = self.tree['root'], method=1)
+            sys.stdout.write(f"\n\nUsing the leading louvian method since no algo is defined.")
+            self.find_communities_recursive(self._graph, tree = self.tree['root'], method=0)
+
+        l = self.communities_subgraph_inclusive
 
         # Edgelist not required.
         _merged_dict = self._root_communities_edgelist.copy()
         _merged_dict.update(self._leaf_communities_edgelist)
+
+        self.tree['root']['key_reg_trace'] = self._key_reg_trace.copy()
+        
         return self._leaf_communities_edgelist
 
     def has_cycles(self, graph: igraph.Graph):
@@ -164,28 +193,31 @@ class CommunityFinder:
     def find_communities_recursive(self, graph: igraph.Graph, depth: Union[str, None] = None, tree = None, method : int = 0) -> None:
 
         if depth is not None:
-            self.communities_subgraph_inclusive[depth] = [graph.copy(),]
+            self.communities_subgraph_inclusive[depth] = graph.copy()
         
         # Tree setting spot.
         _key_reg_vertex = [ [ i.index,i["_nx_name"] ] for i in graph.vs if i["_nx_name"] in self.key_regulators.keys()]
+
+        for _, name in _key_reg_vertex:
+            # This will capture the maximum depth for each keyreg in time.
+            self._key_reg_trace[name] = depth
+
         has_keyreg = True if len(_key_reg_vertex) > 0 else False
 
         l = dict()
-        _property_headings_list = [
-            "eigen_vector_centrality",
-            "betweenness_centrality",
-            "closeness_centrality",
-            "probability_degree_distribution",
-            "clustering_coefficient",
-            "neighborhood_connectivity",
-        ]
+
+
+        mathematical_properties = self.find_topological_and_centrality_properties(
+            graph,
+            [ i[0] for i in _key_reg_vertex ],
+        )
         
-        for vertex in _key_reg_vertex:
-            list_index = 0
-            l[vertex[1]] = dict()
-            for value in self.find_topological_and_centrality_properties( graph, vertex[0] ):
-                l[vertex[1]][_property_headings_list[list_index]] = value
-                list_index += 1
+        for vertex_id, vertex_name in _key_reg_vertex:
+            l[vertex_name] = dict()
+            _index = 0
+            for value in mathematical_properties[vertex_id]:
+                l[vertex_name][self._property_headings_list[_index]] = value
+                _index += 1
 
         tree['lineage'] = '0' if depth is None else depth
         tree['current_depth'] = tree['lineage'].count('_') + 1
@@ -211,8 +243,12 @@ class CommunityFinder:
             _edg_list = [ [ graph.vs[edge]["_nx_name"] for edge in line] for line in graph.get_edgelist() ]
             self._root_communities_edgelist[f"0_{depth}"] = _edg_list
 
-        if method == 1:communities = list(graph.community_leading_eigenvector( ))
-        elif method == 0:communities = list(graph.community_multilevel())
+        if method == 1:
+            # print("Using leading eigenvector method.", flush=True)
+            communities = list(graph.community_leading_eigenvector( ))
+        elif method == 0:
+            # print("Using Louvain's method.", flush=True)
+            communities = list(graph.community_multilevel())
 
         for vertices in communities:
             if len(vertices) == len(graph.vs):communities.remove(vertices)
@@ -238,51 +274,67 @@ class CommunityFinder:
             # Tree Stuff.
             tree['children'].append(_c_tree)
 
-    def find_topological_and_centrality_properties(self, graph: igraph.Graph , vertex_index: int):
-
-        # See: https://igraph.org/python/doc/api/igraph._igraph.GraphBase.html#eigenvector_centrality
+    def find_topological_and_centrality_properties(self, graph: igraph.Graph , vertex_indices: List[int] ) -> Dict [int, List[float]]:
+        """
+        Finds the topological and centrality properties of a vertex.
+        TODO:
+        - Add caching for each subdivision node so we don;t calculate these properties for each key_reg.
+        """
+        _output: Dict[int, List[float]] = dict()
+        
         vertice_count = len(graph.vs)
         
         if vertice_count < 3:
-            return (-1,-1,-1,-1,-1,-1)
+            for index in vertex_indices:
+                _output[index] = [-1,-1,-1,-1,-1,-1,-1]
+            return _output
 
-        _eigen_vector_centrality = graph.evcent()[vertex_index]/( ( (vertice_count-1)*(vertice_count-2) ) / 2 )
+        
+
+        # See: https://igraph.org/python/doc/api/igraph._igraph.GraphBase.html#eigenvector_centrality
+        _eigen_vector_centrality = graph.evcent()
 
         # See: https://igraph.org/python/doc/api/igraph._igraph.GraphBase.html#betweenness
         # Also see: https://en.wikipedia.org/wiki/Betweenness_centrality#Definition
         # The value is scaled by dividing the centrality value by total number of vertex pairs in the graph.
-        _bc_arr = graph.betweenness()
-        _betweenness_centrality = _bc_arr[vertex_index] / ( ( (vertice_count-1)*(vertice_count-2) ) / 2 ) # Good 
+        _betweenness_centrality_arr = graph.betweenness()
 
 
         # See: https://igraph.org/python/doc/api/igraph._igraph.GraphBase.html#closeness
-        _closeness_centrality = graph.closeness()[vertex_index] ## Good
+        _closeness_centrality = graph.closeness()
 
         # We find the degree of current node then find the number
         # of occurrences of that degree in the list of degrees of all nodes.
         # Then we divide the above number with the length of all distinct degrees
         # present in the graph.
         _degrees = graph.degree()
-        _deg = _degrees[vertex_index]
-        _p_degree_distribution = _degrees.count(_deg) / len(_degrees) # Seems good but verification would be great.
+
 
         # See: https://igraph.org/python/doc/api/igraph._igraph.GraphBase.html#transitivity_local_undirected
-        _clustering_coeff = graph.transitivity_local_undirected()[vertex_index] # Good
+        _clustering_coeff = graph.transitivity_local_undirected()
 
         # See: https://www.centiserver.org/centrality/Neighborhood_Connectivity/
-        _neighborhood = graph.neighbors(vertex_index)
-        _neighborhood_connectivity = sum([graph.vs[vid].degree() for vid in _neighborhood ])/len(_neighborhood) ## Good
 
-        return (
-            _eigen_vector_centrality,
-            _betweenness_centrality,
-            _closeness_centrality,
-            _p_degree_distribution,
-            _clustering_coeff,
-            _neighborhood_connectivity
-        )
+
+        for vertex_index in vertex_indices:
+            _neighborhood = graph.neighbors(vertex_index)
+            
+            _output[vertex_index] = [
+                _eigen_vector_centrality[vertex_index]/( ( (vertice_count-1)*(vertice_count-2) ) / 2 ), # Eigenvector Centrality
+                _betweenness_centrality_arr[vertex_index] / ( ( (vertice_count-1)*(vertice_count-2) ) / 2 ), # Betweenness Centrality
+                _closeness_centrality[vertex_index], # Closeness Centrality
+                _degrees.count( _degrees[vertex_index] ) / len(_degrees), # Probability Degree Distribution
+                _clustering_coeff[vertex_index], # Clustering Coefficient
+                sum([graph.vs[vid].degree() for vid in _neighborhood ])/len(_neighborhood), # Neighborhood Connectivity
+                _degrees[vertex_index], # Degree at this level.
+            ]
+        
+        return _output
 
     def loadFile(self, filePath: Union[str, BinaryIO]) -> None:
+        # TODO:
+        # Add support for multiple format of network input e.g. json etc.
+        # Add a checking parameter to check if the file is a valid network file.
         try:
             self._graph = nx.read_edgelist(filePath, comments="#", delimiter="\t")
             # _json_data = json.dumps(json_graph.node_link_data(self._graph))
@@ -305,24 +357,187 @@ class CommunityFinder:
             l = self._graph.vs[0]
             yield order, [ [self._graph.vs[edge][v_name_type] for edge in line] for line in subgraph.get_edgelist() ]
 
-    def write_edgelist_to_files(self, base_dir : str = "./", delimiter: str = "\t", format : str = "txt" , newline="\n"):
+    def write_leaf_networks(self, base_dir : str = "./", format: str = None ) -> None:
+        # If no output type is specified then fallback to class default.
+        if format is None:format = self.output_format
+
+        _dir = os.path.join(base_dir, "leaf_networks")
+    
+        if not os.path.exists(_dir):os.makedirs(_dir)
+        
+        # JSON will always be rendered anyways as it's use for displaying the interactive subgraphs.
         for filename, sub_graph_edgelist in self._leaf_communities_edgelist.items():
-            # self.communities_subgraph_inclusive[filename][0]["shape"] = 3
-            # self.communities_subgraph_inclusive[filename][0].write_svg(
-            #     os.path.join(base_dir, f"{filename}.svg"),
-            #     shapes="shape",
-            #     labels="_nx_name",
-            #     colors="green"
-            # )
-
             g_sub = nx.Graph(sub_graph_edgelist)
-            _json_data = json.dumps(json_graph.node_link_data(g_sub))
+            json_data = json.dumps(json_graph.node_link_data(g_sub))
+            __dir = os.path.join(_dir, "leaf_nodes_json")
+            
+            try:
+                os.mkdir(__dir)
+            except FileExistsError:
+                pass
 
-            _json_file_obj = open( os.path.join(base_dir, f"{filename}.json"), "w")
-            _json_file_obj.write(_json_data)
-            _json_file_obj.flush()
-            _json_file_obj.close()
+            json_file_obj = open(os.path.join(__dir,f"{filename}.json"),"w")
+            json_file_obj.write(json_data)
+            json_file_obj.flush()
+            json_file_obj.close()
+        
+        if format == "edgelist":
+            __dir = os.path.join(_dir, "leaf_nodes_edgelist")
+                
+            try:os.mkdir(__dir)
+            except FileExistsError:pass
 
+            for filename, sub_graph_edgelist in self._leaf_communities_edgelist.items():
+                with open(os.path.join(__dir,f"{filename}.tsv"),"w") as f:
+                    for line in sub_graph_edgelist:
+                        f.write(f"{line[0]}\t{line[1]}\n")
+
+
+        for filename, sub_graph_edgelist in self._leaf_communities_edgelist.items():
+            
+            __dir = os.path.join(_dir, "leaf_nodes_svg_render")
+            
+            try:os.mkdir(__dir)
+            except FileExistsError:pass
+
+            svg_file_name  = os.path.join(__dir,f"{filename}.svg")
+            # self.communities_subgraph_inclusive[filename][0]["shape"] = 3
+            self.communities_subgraph_inclusive[filename].write_svg(
+                svg_file_name,
+                labels="_nx_name",
+                width=400,
+                colors="lightblue",
+                height=400,
+                vertex_size=50,
+                layout=igraph.Graph.layout_lgl(self.communities_subgraph_inclusive[filename]),
+            )
+    
+    def write_subgraphs(self, base_dir : str , format : str = 'edgelist') -> None:
+        # If no output type is specified then fallback to class default.
+        if format is None:format = self.output_format
+
+        _base_dir = os.path.join(base_dir, "subgraphs")
+
+        try:
+            os.mkdir(_base_dir)
+        except FileExistsError:
+            pass
+
+        _prop_plot__dir = os.path.join(_base_dir, "prop_plots")
+            
+        try:
+            os.mkdir(_prop_plot__dir)
+        except FileExistsError:
+            pass
+
+        for _depth in self.communities_subgraph_inclusive.keys():
+            graph = self.communities_subgraph_inclusive[_depth]
+
+            vertice_count = len(graph.vs)
+            
+            if vertice_count < 3:
+                # Figure this one out.
+                continue
+                # return (-1,-1,-1,-1,-1,-1)
+
+            _eigen_vector_centrality = [ i/(((vertice_count-1)*(vertice_count-2))/2) for i in graph.evcent()]
+            _betweenness_centrality = [ i / ( ( (vertice_count-1)*(vertice_count-2) ) / 2 ) for i in graph.betweenness() ]
+            _closeness_centrality = graph.closeness()
+
+            _degrees = graph.degree()
+            _p_degree_distribution = [ _degrees.count(i) / vertice_count for i in _degrees]
+
+            _clustering_coeff = graph.transitivity_local_undirected()
+
+            _neighborhood_connectivity = []
+            for vertex in graph.vs():
+                vid = vertex.index
+                neighbors = graph.neighbors(vid)
+                if len(neighbors) == 0:
+                    _neighborhood_connectivity.append(0)
+                    continue
+                _neighborhood_connectivity.append(sum( [graph.vs[_vid].degree() for _vid in neighbors ])/len(neighbors))
+            
+            _prop_list = [
+                _eigen_vector_centrality,
+                _betweenness_centrality,
+                _closeness_centrality,
+                _p_degree_distribution,
+                _clustering_coeff,
+                _neighborhood_connectivity
+            ]
+
+            for i in range(len(_prop_list)):
+                property_name = self._property_headings_list[i]
+                y_property_values = _prop_list[i]
+                x_property_values = range(len(y_property_values))
+
+                l = '\n'.join(
+                    [
+                        f"{x_property_values[i]},{y_property_values[i]}" for i in x_property_values
+                    ]
+                )
+
+                l = "index,value\n" + l
+
+                with open(
+                    os.path.join(_prop_plot__dir,f"{_depth}-{property_name}.csv"),
+                    "w"
+                    ) as f:
+                    f.write(l)
+
+        if format == 'edgelist':
+            for _depth in self.communities_subgraph_inclusive.keys():
+                __dir = os.path.join(_base_dir, "subgraphs_tsv")
+                try:os.mkdir(__dir)
+                except FileExistsError:pass
+                _sg_edgelist = [ [  self.communities_subgraph_inclusive[_depth].vs[edge]['_nx_name'] for edge in line ] for line in self.communities_subgraph_inclusive[_depth].get_edgelist() ] 
+                with open(os.path.join(__dir,f"{_depth}.tsv"), "w") as f:
+                    for line in _sg_edgelist:
+                        f.write(f"{line[0]}\t{line[1]}\n")
+
+        # JSON will always be rendered as it's use for displaying the interactive subgraphs.
+        for _depth in self.communities_subgraph_inclusive.keys():
+            g_sub = nx.Graph( [ [ self.communities_subgraph_inclusive[_depth].vs[edge]['_nx_name'] for edge in pair ] for pair in  self.communities_subgraph_inclusive[_depth].get_edgelist()] )
+            json_data = json.dumps(json_graph.node_link_data(g_sub))
+            __dir = os.path.join(_base_dir, "subgraphs_json")
+            
+            try:
+                os.mkdir(__dir)
+            except FileExistsError:
+                pass
+
+            json_file_obj = open(
+                os.path.join(__dir,f"{_depth}.json"),
+                "w"
+            )
+            json_file_obj.write(json_data)
+            json_file_obj.flush()
+            json_file_obj.close()
+
+        # SVG will always be rendered.
+        for _depth in self.communities_subgraph_inclusive.keys():
+            
+            __dir = os.path.join(_base_dir, "subgraphs_svg_render")
+            
+            try:os.mkdir(__dir)
+            except FileExistsError:pass
+
+            svg_file_name  = os.path.join(__dir, f'{_depth}.svg')
+            _l = len(self.communities_subgraph_inclusive[_depth].vs)
+            dim = 30 * _l
+
+            colors = [ "lightblue" if i['_nx_name'] in self.key_regulators.keys() else "lightsalmon" for i in self.communities_subgraph_inclusive[_depth].vs]
+
+            self.communities_subgraph_inclusive[_depth].write_svg(
+                svg_file_name,
+                labels="_nx_name",
+                width= dim if dim > 400 else 90 * _l,
+                colors=colors,
+                height= dim if dim > 400 else 90 * _l,
+                vertex_size=40,
+                layout=igraph.Graph.layout_lgl(self.communities_subgraph_inclusive[_depth]),
+            )
 
 if __name__ == "__main__":
     # The input to this script are: 
@@ -342,32 +557,47 @@ if __name__ == "__main__":
         key_regs = cf.key_regulators
 
         with open("lib/knowledge_tree_1.json", "w") as fp:
-            json.dump(tree__,fp)
+            json.dump(tree__,fp , indent=4 , skipkeys=True)
 
         community_subgraph_inclusive = cf.communities_subgraph_inclusive
 
-        # cf.write_edgelist_to_files(base_dir="./samples")
+        # cf.write_leaf_networks(base_dir="./tmp")
+
+        cf.write_subgraphs(base_dir="./tmp")
+
 
         key_regs.clear()
     else:
-        root_network_file, cf_method, v_min, num_key_regs, output_format, output_dir = sys.argv[1:]
+        output_dir = sys.argv[2]
+        # TODO:
+        # - add a check to see if the output directory exists.
+        # - add safety nets for arguments so no bogus args get into the class.
+        with open(f"{output_dir.rstrip('/')}/arguments.txt", "r") as fp:
+            cf_args = fp.read().split("\n")
 
-        cf = CommunityFinder(root_network_file)
-        
+        if 'output-type-edgelist-tsv' in cf_args[3]:format = 'edgelist'
+        elif 'output-type-json' in cf_args[3]:format = 'json'
+        else:format = ''
+
+        cf = CommunityFinder(sys.argv[1], output_format=format,)
+
         leaf_communities = cf.parse(
-            subgraph_min_vertices=int(v_min),
-            key_regulator_bin_width=int(num_key_regs),
-            cf_method=cf_method
+            subgraph_min_vertices=int(cf_args[1]),
+            key_regulator_bin_width=int(cf_args[2]),
+            cf_algo=cf_args[0],
             )
-        
-        lc = cf._leaf_communities_edgelist
 
-        key_regs = cf.key_regulators
+        lc = cf._leaf_communities_edgelist
 
         community_subgraph_inclusive = cf.communities_subgraph_inclusive
 
-        # cf.write_edgelist_to_files(base_dir=sys.argv[2])
         tree__ = cf.tree['root']
 
-        with open(f"{output_dir.rstrip('/')}/knowledge_tree_1.json", "w") as fp:
+        with open(f"{output_dir.rstrip('/')}/tree.json", "w") as fp:
             json.dump(tree__,fp)
+
+
+        cf.write_leaf_networks(base_dir=output_dir , format= format)
+
+        cf.write_subgraphs(base_dir=output_dir , format= format)
+

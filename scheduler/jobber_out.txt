@@ -1,6 +1,3 @@
 Moving to output DIR
 Ran the script.
-	zip warning: name not matched: Samples/*
-
-zip error: Nothing to do! (output.zip)
-Job@17-04-2201:33:50 is Done
+Job@28-04-2212:29:17 is Done

@@ -51,13 +51,15 @@
         for ($j=0; $j < count($row)+2; $j++ ) {
           $link = "<a target=\"blank\" rel=\"noopener noreferrer\" href=\"../upload/output_" . crc32( $row[1] . "salt" . $row[2] ) . "/\">Download </a>";
           
+          $render_link = "<a target=\"blank\" rel=\"noopener noreferrer\" href=\"../lib/d32.html?tree=../upload/output_" . crc32( $row[1] . "salt" . $row[2] ) . "/tree.json\">Render </a>";
+
           $cancel_job = "<form method=\"POST\"> <input type=\"hidden\" value=\"1\" name=\"cancel_job\"/>"
           ."<input type=\"hidden\" name=\"search_only\" value=\"0\" />"
           ."<input type=\"hidden\" name=\"usr_name\" value=\"" . $row[1] ."\"/>".
           "<input type=\"hidden\" name=\"job_name\" value=\"" . $row[2] ."\"/>".
           "<input type=\"submit\" value=\"Cancel\"> </form>";
 
-          $txt = count($row) <= $j ? ( $j == 4 ? ( $row[3] == 4 ? ( $link ) : "N/A" ) : ($row[0]=="N/A" ? "N/A" : $cancel_job) ) : ($j==3 ? $job_states[ (int)$row[$j] ] : $row[$j]);
+          $txt = count($row) <= $j ? ( $j == 4 ? ( $row[3] == 4 ? ( $link . $render_link ) : "N/A" ) : ($row[0]=="N/A" ? "N/A" : $cancel_job) ) : ($j==3 ? $job_states[ (int)$row[$j] ] : $row[$j]);
           echo "<td>" . $txt . "</td>";
         }
         echo "</tr>";
@@ -101,15 +103,15 @@
         <br/>
         
         <select id="cf-algo" name="cf_algo" title="Select the algorithm using which you would like to find the communities in your network.">
-          <option value="cfa-leading_eigen_vector" title="M. E. J. Newman's leading eigenvector method for detecting community structure.">
+          <option value="leading_eigenvector" title="M. E. J. Newman's leading eigenvector method for detecting community structure.">
             Leading Eigen Vector Method
           </option>
-          <option value="cfa-louvians_method" title="Community structure based on the multilevel algorithm of Blondel et al.">
+          <option value="louvain" title="Community structure based on the multilevel algorithm of Blondel et al.">
             Louvian's Method
           </option>
-          <option value="cfa-leiden" title="Finds the community structure of the graph using the Leiden algorithm of Traag, van Eck & Waltman.">
+          <!-- <option value="cfa-leiden" title="Finds the community structure of the graph using the Leiden algorithm of Traag, van Eck & Waltman.">
             Leiden's Method
-          </option>
+          </option> -->
         </select>
 
         <br/>
@@ -176,7 +178,6 @@
       After completing your Jobs will stay on our server for 24hours and will be deleted afterwards.
       <br><br>
       We do not store any of your personal info, we just use your IP and a simple name for Job tracking.
-      We also don't use any cookies whatsoever.
     </p>
   </div>
   <br/>

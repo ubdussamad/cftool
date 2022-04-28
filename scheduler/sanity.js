@@ -2,47 +2,45 @@
 // Author: ubdussamad <ubdussamad at jeemail>
 // License: MIT
 
+function getCookie(cname) {
+  var cookies = ` ${document.cookie}`.split(";");
+  var val = "";
+  for (var i = 0; i < cookies.length; i++) {
+    var cookie = cookies[i].split("=");
+    if (cookie[0] == ` ${cname}`) {
+      return cookie[1];
+    }
+  }
+  return "";
+}
 
-// function getCookie(cname) {
-//   var cookies = ` ${document.cookie}`.split(";");
-//   var val = "";
-//   for (var i = 0; i < cookies.length; i++) {
-//     var cookie = cookies[i].split("=");
-//     if (cookie[0] == ` ${cname}`) {
-//       return cookie[1];
-//     }
-//   }
-//   return "";
-// }
 
+var cookies = document.cookie;
 
-// var cookies = document.cookie;
+if (cookies) {
+  console.log("Cookies found");
+  console.log(cookies);
+  var current_cookie = document.cookie;
 
-// if (cookies) {
-//   console.log("Cookies found");
-//   console.log(cookies);
-//   var current_cookie = document.cookie;
+  if (current_cookie.includes("agrred_to_cookie=true")) {
+    console.log("Cookie accepted");
+    if ( current_cookie.includes("usr_name")) {
+      console.log("usr_name found");
+      user = getCookie('usr_name');
+      console.log(user);
+      document.getElementById('usr_name').value = user;
+      document.getElementById('sch_txt').value = user;
+    }
 
-//   if (current_cookie.includes("agrred_to_cookie=true")) {
-//     console.log("Cookie accepted");
-//     if ( current_cookie.includes("usr_name")) {
-//       console.log("usr_name found");
-//       user = getCookie('usr_name');
-//       console.log(user);
-//       document.getElementById('usr_name').value = user;
-//       document.getElementById('sch_txt').value = user;
-//     }
-
-// }
-// } else {
-//   console.log("No cookies found");
-//   if (confirm("We use browser cookies to ONLY store your username so that it'd be easy for you to work with our tool.\n\n Please accept the use of cookies.")) {
-//     document.cookie = "agrred_to_cookie=true;path=/;SameSite=None; Secure";
-//   } else {
-//     document.cookie = "agrred_to_cookie=false;path=/;";
-//   }
-// }
-
+}
+} else {
+  console.log("No cookies found");
+  if (confirm("We use browser cookies to ONLY store your username so that it'd be easy for you to work with our tool.\n\n Please accept the use of cookies.")) {
+    document.cookie = "agrred_to_cookie=true;path=/;SameSite=None; Secure";
+  } else {
+    document.cookie = "agrred_to_cookie=false;path=/;";
+  }
+}
 
 
 
@@ -66,6 +64,11 @@ function validate_job_submission() {
   if(file) {// perform the size check only if a file is present.
     if(file.size > 100 && file.size < 26214400  ) { // 50 MB (this size is in bytes)
         if (a != '' & b != '') {
+          current_cookie = document.cookie;
+          if (current_cookie.includes("agrred_to_cookie=true")) {
+            document.cookie = current_cookie + ";usr_name=" + b.value + ";";
+            console.log("Username cookie set");
+            console.log(document.cookie);
           return(true);
         }       
     }
@@ -79,7 +82,7 @@ function validate_job_submission() {
     return false;
   }
 }
-
+}
 function validate_job_search() {
   var sch_str = document.getElementById('sch_txt');
   const regex = new RegExp('[;&|`^]');

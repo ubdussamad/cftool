@@ -9,7 +9,7 @@
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Titillium+Web:wght@300&display=swap');
       @import url('https://fonts.googleapis.com/css2?family=Whisper&display=swap');
-    </style> 
+    </style>
   </head>
 
   <body>
@@ -17,7 +17,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
   <script src="d32_app.js"></script>
 
-	<div class="container">
+	<div class="container" id="big_container">
     <div class="details_container" style="display:list-item;line-height: 10px;">
       <p style="display: none;" id="current_selection_lineage">0</p>
       
@@ -46,27 +46,56 @@
         </tr>
         <tr class='selection_table_1_tr'>
           <th class='selection_table_1_th'> Algorithm </th>
-          <td class='selection_table_1_td' id="method_label" colspan="3"> Leading eigen Vector </td>
-          <!-- <th class='selection_table_1_th'> Is Root Node: </th>
-          <td class='selection_table_1_td' id="selection_is_root_node"> False </td> -->
+          <td class='selection_table_1_td' id="method_label" colspan="3"> Select a node to find out. </td>
+        </tr>
+
+        <tr class='selection_table_1_tr'>
+          <th class='selection_table_1_th'> V<sub>min</sub> </th>
+          <td class='selection_table_1_td' id="selection_vmin" title="Minimum number of vertices before we stop splitting subnetworks. Note: Incase the subgraph is star like or has no cycles Vmin will be ingnored and that subgraph would be considered as a leaf node."> N/A </td>
+          <th class='selection_table_1_th'> KeyReg Num: </th>
+          <td class='selection_table_1_td' id="selection_kr_num" title="Number of max degree nodes to be considered as key regulators."> N/A </td>
         </tr>
       </table>
       
       <div class="details_btn_container">
-      <button id="tabular_displ_en" class="selection_btns"> Show Table </button>
-      <button id="graph_displ_en" class="selection_btns"> Graphs </button>
-      <button id="something_else" class="selection_btns"> Unselect </button>
-      </div>
+      <button id="tabular_displ_en" class="selection_btns" title="Show a table of all key regulators present at this level."> Show Table </button>
+      <button id="graph_displ_en" class="selection_btns" title="Show graphs of topological and centrality properties of each key regulator at every depth."> Charts </button>
+      <button id="unselect_everything" class="selection_btns" title="Unselect everything which has been selected so far."> Unselect *</button>
+      <a id="get_sub_network_render" target="blank" rel="noopener noreferrer" class="selection_btn_links" title="Display the sub-network at this level."> 
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAABJUlEQVQ4jYXTPSuGURgH8J/7eUKeYlSU2JQsCiurEoVvIHwDKxsfwKKMyiAlzDaTgaLIYkDZKOSd4bnkpOe+/evqnK6X//V2TkkxBtCGm3/8aqIH6yE9eU7lAoJHNKMOD3lOpTgHMYoTvIfuDh84xkES04jpiL3OkGExAmf/JHhPCH8wF7oFZGV84gnjqMcltnMqHscIXiPmsy4xNgTZDIaxhO6wnWMe+1iNql+oDqgWWoKgNXxug+D+r2OWQ5DiK6Qm0jU2qk59BkNYTlo4w1rSQgnPKcGW6gDrsYKp0HfEeYhJjGEPb0EwUY42mrCJivwNCFuX6sOaQFaK/i7QHmWme++NBKeJ7gh92MBVQTKd2MVO3Gui6C9U/K6tUpSpCP0hufgGqBM+XzVoT3kAAAAASUVORK5CYII="/>  
+      </a>
+      <a id="get_sub_network_sg" target="blank" rel="noopener noreferrer" class="selection_btn_links" title="Download the sub-network at this level.">
+        <!-- <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABsAAAAbCAYAAACN1PRVAAAABmJLR0QA/wD/AP+gvaeTAAAAqklEQVRIie3VMQ4BURSF4Y9INEoLQCeRaGYZsxCJSjOliqVotDaksQbRDIU3BSEZ3kxCZv7mJqc4/2vufbQ0gR6yMGtngmuYH9Gt/i2trKmy4Yf517I5Tkif8jTk87LCsmS4YOW+Z0ucsa5aVLBGHmR5naKCLMhqFxWMqypaYBPZsQ09D7y63FOMImUzDJ7Dn13qaN59gAn2Eb0JjmVkO/TRiZAdQk/Ln3MD60sV4/W7ARkAAAAASUVORK5CYII="/> -->
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA71pVKAAAABmJLR0QA/wD/AP+gvaeTAAAAcElEQVQokc3OMQ6CAAyF4U/jCosr5zAmTkxsek5mJiauwjEYXRojCbESQsK/tM17ry1H5bUl3P0Sz1s27xK+oYi+iHnV5RbXqKu5Y4ya8kCZeMrwYf72E1USrsIHLgvilIQ/nL76Gk1yGXoMf/h25A1BpQjjvUEWJgAAAABJRU5ErkJggg=="/>
+      </a>
 
+      <a id="get_sub_network_interactive_render" target="blank" rel="noopener noreferrer" class="selection_btn_links" title="Render Interactive Subgraph at this level. (Experimental Feature)">
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAARCAYAAAA7bUf6AAAABmJLR0QA/wD/AP+gvaeTAAABFElEQVQ4ja3TPy/DYRAH8A+xtJPF0slKWXgDGEmEF0ETMYhYDCZCIsLCZJQYSLfGQBPegEYwGM0GRhJ/h981qebXVlO3fPN87+773HP3HP9gXYEZrGC4jdw77OC1KrKGe1y1ITKGIaxXiSNkUwIXUcZCii8bebpb3DaNKcw2C+ppIbKNB8w1C6qvpIASZuJcRiVQ8CXMp4lVe3IhmVQFeSzjOjAffAbnanpS/5xTFLGPJXxjFIcYwAGOcdKsklrrxRlGAnvr/H+aTg6fmAzMNQpMm04/tiS/dwJP6MOl5Jeu4rE2Ia2SAnZxg4/gvuK8J2UyaSLFqOQdL8E9h+Bm+H9ZJ7szjkFsdLLFt5Itfmsjp7H9AEHROd2CotteAAAAAElFTkSuQmCC"/>  
+      </a>
+      </div>
+      <div id="selection_table_2_div">
       <table class="selection_table_2" id="selection_table_2">
       <!-- To be populated automatically by key regulator details script. -->
       </table>
+      </div>
 
       <div class="graph_container" id="graph_container">
+        <div id="selection_ddms_div" class="selection_ddms_div">
           <select name="key_reg_selection_ddm" id="key_reg_selection_ddm">
             <option value="0"> Select Key Regulator </option>
           </select>
-          <div id="graph_details_cont"></div>
+          <select name="key_reg_property_selection_ddm" id="key_reg_property_selection_ddm">
+            <option value="0"> Select a Property. </option>
+          </select>
+        </div>
+        <div id="graph_details_cont" class="graph_details_cont">  
+          <table id="selection_keyreg_prop_table">
+            
+          </table>
+        </div>
+        <div id="selection_graph_svg" class="selection_graph_svg">
+        </div>
+          </div>
       </div>
   </div>
   </body>

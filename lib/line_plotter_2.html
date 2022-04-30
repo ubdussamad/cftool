@@ -33,32 +33,48 @@
 
         rows.unshift( ['index', 'value'] );
 
-        console.log(rows);
-
         function drawChart() {
             var data = google.visualization.arrayToDataTable(rows);
-
-
-
-            console.log(x_max + ' ' + y_max + ' ' + x_min + ' ' + y_min);
-
             var options = {
             title: y_title.toUpperCase() + ' vs. NODE DEGREE',
-            hAxis: {title: 'node_degrees (ascending)', minValue: x_min - (0.3 * x_min), maxValue: x_max + (0.1 * x_max)},
-            vAxis: {title: y_title , minValue: y_min - (0.1 * y_min), maxValue: y_max + (0.1 * y_max)},
-            legend: 'none'
+
+            subtitle : 'Created using JNU SCIS Community finding tool.',
+            explorer : {},
+            hAxis: { title: 'node_degrees (ascending)', minValue: x_min - (0.3 * x_min), maxValue: x_max + (0.1 * x_max)},
+            vAxis: { logscale: true , title: y_title , minValue: y_min - (0.1 * y_min), maxValue: y_max + (0.1 * y_max)},
+            legend: 'none',
+            trendlines: {
+              0: {
+                type: 'linear',
+                color: 'red',
+                lineWidth: 3,
+                opacity: 0.75,
+                showR2: true,
+                visibleInLegend: true
+              }
+            }
             };
 
-            var chart = new google.visualization.ScatterChart(document.getElementById('chart_div'));
+            var div = document.getElementById('chart_div');
+            var screen_width = window.innerWidth;
+            var screen_height = window.innerHeight;
+
+            var scale = 0.95;
+
+            div.style.width = screen_width * scale + 'px';
+            div.style.height = screen_height * scale + 'px';
+            div.style.marginTop = screen_height * ( (1.0 - scale) / 2 ) + 'px';
+            div.style.marginLeft = screen_width * ( (1.0 - scale) / 2 ) + 'px';
+            div.style.marginRight = screen_width * ( (1.0 - scale) / 2 ) + 'px';
+            div.style.marginBottom = screen_height * ( (1.0 - scale) / 2 ) + 'px';
+
+            var chart = new google.visualization.ScatterChart(div);
 
             chart.draw(data, options);
         }
         google.charts.setOnLoadCallback(drawChart);
 
-        // drawChart();
     });
-
-    // google.charts.setOnLoadCallback(drawChart);
     </script>
   </head>
   <body>

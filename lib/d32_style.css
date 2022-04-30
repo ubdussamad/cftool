@@ -162,13 +162,49 @@ html {
   display: flex;
   flex-direction: column;
   padding: 3px;
+  margin: 4px 6px -2px 6px;
+  border: 1px solid black;
+  border-radius: 6px;
+  box-shadow: 1px 2px 5px black;
+}
 
+.csv_render_heading_text {
+  font-size: 16px;
+  font-family: 'Titillium Web', sans-serif;
+  color: #2f2f30;
+  font-weight: bold;
+  margin: 1px 1px 1px 1px;
+  padding: 0px 0px 0px 0px;
+  text-align: center;
+  flex-direction: row;
+  /* display: flex; */
+}
+
+#csv_plot_prop_selection_ddm {
+  display: flex;
+  flex-direction: row;
+  padding: 3px;
+  margin: 7px 6px 4px 6px;
+  border: 1px solid black;
+  border-radius: 3px;
+  box-shadow: 1px 2px 4px black;
 }
 
 
 #selection_keyreg_prop_table {
   display: table;
   width: 100%;
+  padding: 6px;
+  border: 1px solid #686363;
+  margin-top: 5px;
+  border-radius: 0px 0px 9px 9px;
+  box-shadow: 1px 1px 3px gray;
+}
+
+.keyreg_prop_table_header_cell {
+  border: 1px solid #8c6464;
+  padding: 3px;
+  background-color: #d6e3fb;
 }
 
 .keyreg_prop_table_row {
@@ -211,20 +247,45 @@ html {
 #key_reg_selection_ddm {
   font-size: 10px;
   display: block;
-  width: max-content;
-  margin: 0px 0px 0px 5px;
+  width: 100%;
+  margin: 0px 0px 5px 5px;
 }
 
 #key_reg_property_selection_ddm {
   font-size: 10px;
+  width: 100%;
   display: block;
-  width: max-content;
   margin: 0px 0px 0px 5px;
 }
 
 #selection_ddms_div {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: space-between;
-  margin: 0px 0px 0px 0px;
+  margin: 9px 5px 9px 7px;
+  border: 1px solid black;
+  padding: 8px;
+  border-radius: 6px;
+  box-shadow: 1px 1px 7px #9caaca;
+}
+
+.kr_prop_lineage_plot_title {
+  font-size: 16px;
+  font-family: 'Titillium Web', sans-serif;
+  color: #2f2f30;
+  font-weight: bold;
+  margin: 1px 1px 9px 1px;
+  padding: 0px 0px 0px 0px;
+  text-align: center;
+  flex-direction: row;
+  /* display: flex; */
+}
+#secondary_table_redering_cont {
+  display: flex;
+  flex-direction: column;
+  padding: 3px;
+  margin: 4px 6px -2px 6px;
+  border: 1px solid black;
+  border-radius: 6px;
+  box-shadow: 1px 2px 5px black;
 }

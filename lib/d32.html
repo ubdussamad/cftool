@@ -80,25 +80,42 @@
       </div>
 
       <div class="graph_container" id="graph_container">
-        <div id="selection_ddms_div" class="selection_ddms_div">
-          <select name="key_reg_selection_ddm" id="key_reg_selection_ddm">
-            <option value="0"> Select Key Regulator </option>
-          </select>
-          <select name="key_reg_property_selection_ddm" id="key_reg_property_selection_ddm">
-            <option value="0"> Select a Property. </option>
-          </select>
-        </div>
-        <div id="graph_details_cont" class="graph_details_cont">  
-          <table id="selection_keyreg_prop_table">
-            
-          </table>
+
+        <!-- <div id="secondary_table_redering_cont"> -->
+
+          <div id="selection_ddms_div" class="selection_ddms_div">
+            <span class="kr_prop_lineage_plot_title" title="Select a property to tabulate for each level of the selected key regulator's lineage."> Select a property to tabulate:          | ? </span>
+            <br/> 
+              <div style="flex-direction: column;display:flex;align-items: center;">
+              <select name="key_reg_selection_ddm" id="key_reg_selection_ddm">
+                <option value="0"> Key Regulator </option>
+              </select>
+              <select name="key_reg_property_selection_ddm" id="key_reg_property_selection_ddm">
+                <option value="0"> Select a Property. </option>
+              </select>
+            </div>
+            <table id="selection_keyreg_prop_table">
+            </table>
+          </div>
+
+
+          <div id="graph_details_cont" class="graph_details_cont">  
+
+        <!-- </div> -->
+
           <br/>
           <div id="selection_keyreg_prop_table_csv_render_buttons">
-          <a rel="noopener noreferrer" id="csv_line_plot_render_line" class="csv_line_plot_render_fake_btn"> Render Line plot. </a>
+          <span class="csv_render_heading_text"> Select a property to plot: </span> <br/>
+          <select name="csv_plot_prop_selection_ddm" id="csv_plot_prop_selection_ddm" title="Here you can select to reder/download a property plot (say closeness centrality) for each of the nodes at the current selected level. The scatter plot will also have a curvefitted line present in it.">
+            <option value="0"> Select a property to graph. </option>
+          </select>
+
+          <br/>
+          <a rel="noopener noreferrer" title="Display a line plot of the selected property for each node vs the node's degree. (This dosen't usually works out because of the nature of data.) " id="csv_line_plot_render_line" class="csv_line_plot_render_fake_btn"> Render Line plot. </a>
           <br/><br/>
-          <a rel="noopener noreferrer" id="csv_line_plot_render_scatter" class="csv_line_plot_render_fake_btn"> Render Scatter plot. </a>
+          <a rel="noopener noreferrer" title="Display a scatter plot of the selected property for each node vs the node's degree." id="csv_line_plot_render_scatter" class="csv_line_plot_render_fake_btn"> Render Scatter plot. </a>
           <br/><br/>
-          <a rel="noopener noreferrer" id="csv_line_plot_download_csv" class="csv_line_plot_render_fake_btn"> Download CSV </a>
+          <a rel="noopener noreferrer" title="Download a csv file for the selected property for each node vs the node's degree." id="csv_line_plot_download_csv" class="csv_line_plot_render_fake_btn"> Download CSV </a>
           </div>
           <br/>
         </div>

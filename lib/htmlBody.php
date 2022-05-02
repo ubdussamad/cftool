@@ -125,7 +125,7 @@
 
         <br/>
         <span class="form-h2" name="kreg_nums" title="Set the number of top-most degree nodes to trace. Upper limit is the total number of nodes in your network.">
-          Set the number of top-most degree nodes to trace.
+          Number of max-degree nodes to trace.
         </span>
         <input name="keyreg_num" type="number" min="1" value=30 required>
         <br/>
@@ -162,20 +162,21 @@
       </form>
     </div>
   </div>
-  <div class="intro">
+  <div class="intro_page_para">
     <p>
-      This tool lets you find all possible communities in your gene data.
-      Please use this tool and don't use any other tool since this tool is the best.
+      This tool keeps dividing a give undirected non-weighted network into communities 
+      and further divides each community into sub-communities and so on.
+
       <br /><br />
-      To use this just select the <i>.sif</i> file from your local drive and wait for 20 minutes.
+      To use this just select a <i>.tsv (tab separated values)</i> of your network's edgelist from your local drive and wait for 1 minute.
       <br />
       Your jobs will be put in queue and will be processed in the next available slot.
       <br />
       You can view your Job queue using your name and download the finished data.
 
       <br />
-      We use your IP/Credentials to track your jobs.
-      After completing your Jobs will stay on our server for 24hours and will be deleted afterwards.
+      We might use your IP/Credentials to track your jobs.
+      After completing your Jobs will stay on our server for atleast a week unless you delete the job manually.
       <br><br>
       We do not store any of your personal info, we just use your IP and a simple name for Job tracking.
     </p>

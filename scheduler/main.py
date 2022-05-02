@@ -7,7 +7,6 @@ import json
 import networkx as nx
 # import matplotlib.pyplot as plt
 from networkx.readwrite import json_graph
-from numpy import gradient
 
 class CommunityFinder:
     """

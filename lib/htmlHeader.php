@@ -11,6 +11,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
+
+
     <title> Community Finding Tool - SCIS, JNU </title>
 
     <?php
@@ -23,6 +25,7 @@
     }
     
     if ($EN_EXTERN_FONTS) {
+        echo "\n <style> @import url('https://fonts.googleapis.com/css2?family=Titillium+Web:wght@300&display=swap'); \n @import url('https://fonts.googleapis.com/css2?family=Whisper&display=swap'); </style>";
         echo "\n" . '<link rel="preconnect" href="https://fonts.gstatic.com">' . "\n";
         echo '<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab&display=swap" rel="stylesheet">' . "\n";
     }

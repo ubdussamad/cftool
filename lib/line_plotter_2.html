@@ -1,14 +1,22 @@
 <html>
   <head>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Titillium+Web:wght@300&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Whisper&display=swap');
+    </style>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script src="https://d3js.org/d3.v4.js"></script>
     <script type="text/javascript">
+      
+
+      
       google.charts.load('current', {'packages':['corechart']});
       
         
       let params = new URLSearchParams(location.search);
       let csv = params.get('csv');
       let y_title = params.get('y_title');
+      let trendline_type = 'linear';
 
       function getMinMaxOf2DIndex (arr, idx) {
         return {
@@ -18,7 +26,14 @@
       } 
 
       d3.csv(csv, function(rows) {
-        console.log(rows);
+
+        var trendline_curve_type_ddm = document.getElementById('trendline_type');
+      
+        trendline_curve_type_ddm.addEventListener('change', function() {
+          trendline_type = trendline_curve_type_ddm.value;
+          drawChart();
+        });
+
         rows = rows.map(function(row) {
           if (row.index != 'index') {
             return [ parseInt(row.index) , parseFloat(row.value)];
@@ -45,7 +60,7 @@
             legend: 'none',
             trendlines: {
               0: {
-                type: 'linear',
+                type: trendline_type,
                 color: 'red',
                 lineWidth: 3,
                 opacity: 0.75,
@@ -73,11 +88,50 @@
             chart.draw(data, options);
         }
         google.charts.setOnLoadCallback(drawChart);
-
+        // window.addEventListener('DOMContentLoaded', function() {
+        //   var trendline_curve_type_ddm = document.getElementById('trendline_type');
+        
+        //   trendline_curve_type_ddm.addEventListener('change', function() {
+        //     trendline_type = trendline_curve_type_ddm.value;
+        //     drawChart();
+        //   });
+        // });
     });
     </script>
   </head>
   <body>
+    <div style="display: flex;">
+      <div style="
+        border: 1px solid #a6a6a6;
+        padding: 4px 9px 4px 11px;
+        font-family: 'Titillium Web', sans-serif;
+        border-radius: 4px;
+        font-weight: bold;
+        background-color: #c8c8c8;
+        color: #2b2121;
+        box-shadow: 1px 1px 3px gray inset;
+        width: 22%;
+        margin-left: 39%;
+      ">
+        <span>Select Curve Fitting type </span> 
+        <select id="trendline_type" style="
+          font-family: 'Titillium Web', sans-serif;
+          font-weight: bold;
+          background-color: #f0f0f0;
+          color: #2b2121;
+          box-shadow: 1px 1px 3px gray inset;
+          border-radius: 5px;
+          border: 1px solid #8c8a8a;
+          font-size: 14;
+          padding: 0px 0px 0px 20px;
+          margin: 0px 0px 0px 4px;
+        ">
+          <option value="linear" selected = "selected">Linear</option>
+          <option value="exponential">Exponential</option>
+          <option value="polynomial">Polynomial</option>
+        </select>
+      </div>
+    </div>
     <div id="chart_div" style="width: 900px; height: 500px;"></div>
   </body>
 </html>

@@ -8,7 +8,7 @@ pip3 install db-sqlite3
 sudp apt-get install git
 git clone https://github.com/ubdussamad/jnu.git
 
-
+sudo apt-get install python3-networkx
 * copy my local var/www/htdocs to 
 
 * make arrangements for enabling exec php call

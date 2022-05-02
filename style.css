@@ -11,6 +11,11 @@ body {
 	align-items: center;
 }
 
+.intro_page_para {
+	font-size: 1.1rem;
+	font-family: 'Titillium Web', sans-serif;
+	font-weight: bold;
+}
 
 
 .header_section {
@@ -95,7 +100,13 @@ button {
 
 .form-h2 {
 	font-weight: 900;
-	font-family: 'Courier';
+	/* font-family: 'Courier'; */
+	font-family: 'Titillium Web', sans-serif;
+}
+
+select {
+	font-family: 'Titillium Web', sans-serif;
+	font-weight: bold;
 }
 
 .submit_button {

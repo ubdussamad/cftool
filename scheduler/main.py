@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import sys, os
 from typing import BinaryIO, Dict, List, NoReturn, Optional, Union
-
+import re
 import igraph
 import json
 import networkx as nx
@@ -276,8 +276,6 @@ class CommunityFinder:
     def find_topological_and_centrality_properties(self, graph: igraph.Graph , vertex_indices: List[int] ) -> Dict [int, List[float]]:
         """
         Finds the topological and centrality properties of a vertex.
-        TODO:
-        - Add caching for each subdivision node so we don;t calculate these properties for each key_reg.
         """
         _output: Dict[int, List[float]] = dict()
         
@@ -335,7 +333,25 @@ class CommunityFinder:
         # Add support for multiple format of network input e.g. json etc.
         # Add a checking parameter to check if the file is a valid network file.
         try:
-            self._graph = nx.read_edgelist(filePath, comments="#", delimiter="\t")
+            format = filePath.split('.')[-1]
+            if format == 'json':
+                print("Loading network from json file is not yet supported.", flush=True)
+                raise NotImplementedError
+            elif format == 'csv' or format == 'tsv':
+                with open(filePath, 'r') as f:
+                    text = f.read()
+                    tsv_l = len(re.findall(r'.*?\t.*\s{1}', text))
+                    csv_l = len(re.findall(r'.*?,.*\s{1}', text))
+
+                    if tsv_l > csv_l:
+                        print("Loading network from tsv file.")
+                        self._graph = nx.read_edgelist(filePath, comments="#" , delimiter="\t")
+                    else:
+                        print("Loading network from csv file.")
+                        self._graph = nx.read_edgelist(filePath, comments="#" , delimiter=",")
+            else:
+                print("Unknown file format.")
+                raise Exception("Unknown file format.")
             # _json_data = json.dumps(json_graph.node_link_data(self._graph))
             # _json_file_obj = open( os.path.join("", f"parent_network.json"), "w")
             # _json_file_obj.write(_json_data)

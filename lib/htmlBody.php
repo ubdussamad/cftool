@@ -106,7 +106,7 @@
           <option value="leading_eigenvector" title="M. E. J. Newman's leading eigenvector method for detecting community structure.">
             Leading Eigen Vector Method
           </option>
-          <option value="louvain" title="Community structure based on the multilevel algorithm of Blondel et al.">
+          <option value="louvain" title="Community structure based on the multilevel algorithm of Blondel et al." selected>
             Louvian's Method
           </option>
           <!-- <option value="cfa-leiden" title="Finds the community structure of the graph using the Leiden algorithm of Traag, van Eck & Waltman.">
@@ -131,12 +131,15 @@
         <br/>
         <br/>
 
-        <span class="form-h2" title="Select an edgelist file. The file should be a Tab-separated value edge-list. https://en.wikipedia.org/wiki/Tab-separated_values">
+        <span class="form-h2" title="Select an edgelist file. The file format should either be a csv or tsv and others coming soon. Incase of csv and tsv we always assume that there is a header row so we always remove the first row in those cases.">
           Select Edgelist File: <i> (.tsv) </i>
         </span>
         <br/>
         
         <input id="file_name" type="file" name="sif_file" placeholder="<?php $date = date('d-m-y h:i:s');echo $date; ?>" />
+        <!-- <br/>
+        <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike">
+        <label for="vehicle1"> The file has a header? </label><br> -->
 
         <br />
         <br/>

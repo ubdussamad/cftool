@@ -34,6 +34,15 @@
           drawChart();
         });
 
+        // window.addEventListener('DOMContentLoaded', function() {
+        //   var trendline_curve_type_ddm = document.getElementById('trendline_type');
+        
+        //   trendline_curve_type_ddm.addEventListener('change', function() {
+        //     trendline_type = trendline_curve_type_ddm.value;
+        //     drawChart();
+        //   });
+        // });
+
         rows = rows.map(function(row) {
           if (row.index != 'index') {
             return [ parseInt(row.index) , parseFloat(row.value)];

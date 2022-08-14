@@ -7,3 +7,4 @@ scheduler/jobs.db
 scheduler/logs/*
 scheduler/jobber_out.txt
 scheduler/jobs.db
+scheduler/jobber_out.txt

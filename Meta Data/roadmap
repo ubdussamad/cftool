@@ -5,17 +5,19 @@ sudo apt-get install apache2
 sudo apt-get install php libapache2-mod-php php-mcrypt php-mysql
 sudo apt-get install python3-pip, sqlite3
 pip3 install db-sqlite3
-sudp apt-get install git
+sudo apt-get install git
 git clone https://github.com/ubdussamad/jnu.git
 
 sudo apt-get install python3-networkx
-* copy my local var/www/htdocs to 
+sudo apt install python3-igraph
+
+* Copy my local var/www/htdocs to 
 
 * make arrangements for enabling exec php call
 
 * write a job scheduler python or bash script
 
-* install apache GUI
+* Install apache GUI
 https://hostadvice.com/how-to/how-to-install-and-configure-apache-web-gui-on-ubuntu-18-04-vps-or-dedicated-server/
 
 * Create a ht docs file to control which files are acessible from beb

@@ -12,15 +12,26 @@ RUN apt install -y python3 git
 RUN apt install -y python3-pip sqlite3
 RUN apt install -y apache2
 RUN apt install -y python2.7
-RUN apt install -y python-pip
+RUN apt install -y curl
+# Install pip for python2.7
+RUN curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py
+RUN python2.7 get-pip.py
+RUN python2.7 -m pip install scipy numpy
+RUN rm get-pip.py
+
+
+# RUN apt install -y python-pip
 RUN apt install -y php libapache2-mod-php
 RUN python3 -m pip install networkx==2.8
 RUN python3 -m pip install igraph==0.9.10
 RUN python3 -m pip install db-sqlite3
-RUN python2.7 -m pip install scipy numpy
+# RUN python2.7 -m pip install scipy numpy
 
 # Copying files to container
 RUN git clone https://github.com/ubdussamad/cftool.git
+# Fetch all the submodules
+RUN cd cftool && git submodule update --init --recursive
+RUN cd ../
 RUN rm -rf /var/www/html
 RUN mv cftool /var/www/html
 RUN chmod -R 777 /var/www/html

@@ -11,10 +11,13 @@ RUN apt update
 RUN apt install -y python3 git
 RUN apt install -y python3-pip sqlite3
 RUN apt install -y apache2
+RUN apt install -y python2.7
+RUN apt install -y python-pip
 RUN apt install -y php libapache2-mod-php
 RUN python3 -m pip install networkx==2.8
 RUN python3 -m pip install igraph==0.9.10
 RUN python3 -m pip install db-sqlite3
+RUN python2.7 -m pip install scipy numpy
 
 # Copying files to container
 RUN git clone https://github.com/ubdussamad/cftool.git

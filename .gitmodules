@@ -1,3 +1,3 @@
-[submodule "scheduler/Community-Finding-Tools"]
-	path = scheduler/Community-Finding-Tools
-	url = https://github.com/mwbioinfo/Community-Finding-Tools.git
+[submodule "scheduler/coexp"]
+	path = scheduler/coexp
+	url = https://github.com/ubdussamad/coexp.git
